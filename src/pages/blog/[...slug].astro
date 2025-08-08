@@ -119,12 +119,7 @@ const seoProps = {
                 </p>
               </div>
 
-              <!-- Temporary Access Notice -->
-              <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p class="text-sm text-yellow-800">
-                  <strong>Developer Note:</strong> Add <code>?premium=temp2024</code> to the URL for temporary access to premium content.
-                </p>
-              </div>
+              
             </div>
 
             <!-- Full Content (hidden by default) -->
@@ -136,17 +131,7 @@ const seoProps = {
               <!-- Comments Section for Premium Content -->
               <Comments postSlug={post.slug} postTitle={post.data.title} />
               
-              <!-- Temporary Access Banner -->
-              <div class="mt-8 p-4 bg-green-50 border border-green-200 rounded-lg">
-                <div class="flex items-center">
-                  <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                  </svg>
-                  <span class="text-sm text-green-800 font-medium">
-                    Temporary Premium Access Active - You can view all premium content
-                  </span>
-                </div>
-              </div>
+              
             </div>
           </div>
         ) : (
@@ -166,19 +151,6 @@ const seoProps = {
 </Layout>
 
 <script>
-  // Check for temporary premium access on client side
-  document.addEventListener('DOMContentLoaded', function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const hasTempAccess = urlParams.get('premium') === 'temp2024';
-    
-    if (hasTempAccess) {
-      const paywall = document.getElementById('premium-paywall');
-      const fullContent = document.getElementById('premium-full-content');
-      
-      if (paywall && fullContent) {
-        paywall.classList.add('hidden');
-        fullContent.classList.remove('hidden');
-      }
-    }
-  });
+  // In production, premium content should be gated by your subscription system.
+  // The temporary developer access has been removed.
 </script>

@@ -40,7 +40,7 @@ const { title, subtitle, image = "/images/placeholder.svg", features, ctaText, b
         </div>
       )}
 
-      <form class="space-y-4">
+      <form class="space-y-4" data-leadmagnet="true">
         <input 
           type="email" 
           placeholder="Enter your email address"
@@ -76,3 +76,35 @@ const { title, subtitle, image = "/images/placeholder.svg", features, ctaText, b
     </div>
   </div>
 </div>
+
+<script>
+  // Basic client-side handling; replace with ESP submission as needed
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form[data-leadmagnet="true"]');
+    if (!form) return;
+    const emailInput = form.querySelector('input[type="email"]');
+    const button = form.querySelector('button[type="submit"]');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const email = (emailInput && emailInput.value || '').trim();
+      if (!email || !email.includes('@')) {
+        if (emailInput) {
+          emailInput.classList.add('border-red-500');
+          setTimeout(() => emailInput.classList.remove('border-red-500'), 2000);
+        }
+        return;
+      }
+
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'leadmagnet_submit', { event_category: 'conversion', value: 1 });
+      }
+
+      if (button) {
+        button.textContent = 'Sent! Check your inbox';
+        button.classList.add('bg-green-600');
+      }
+      if (emailInput) emailInput.value = '';
+    });
+  });
+</script>

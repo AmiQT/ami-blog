@@ -45,35 +45,43 @@ const {
 </section>
 
 <script>
-  // Newsletter subscription functionality
-  const newsletterForm = document.querySelector('button');
-  const emailInput = document.querySelector('input[type="email"]');
+  // Newsletter subscription functionality (scoped to this component)
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('section.bg-blue-50 form[data-newsletter="true"]');
+    if (!form) return;
 
-  if (newsletterForm && emailInput) {
-    newsletterForm.addEventListener('click', (e) => {
+    const submitButton = form.querySelector('button[type="submit"]');
+    const emailInput = form.querySelector('input[type="email"]');
+
+    form.addEventListener('submit', (e) => {
       e.preventDefault();
-      const email = emailInput.value;
-      
+      const email = (emailInput && emailInput.value || '').trim();
+
       if (email && email.includes('@')) {
-        // Show success message
-        newsletterForm.textContent = 'Subscribed!';
-        newsletterForm.classList.add('bg-green-600');
-        newsletterForm.classList.remove('bg-gradient-to-r', 'from-blue-600', 'to-purple-600');
-        emailInput.value = '';
-        
-        // Reset after 3 seconds
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'newsletter_signup', {
+            event_category: 'conversion',
+            event_label: 'newsletter_subscription',
+            value: 1
+          });
+        }
+
+        if (submitButton) {
+          submitButton.textContent = 'Subscribed!';
+          submitButton.classList.add('bg-green-600');
+        }
+        if (emailInput) emailInput.value = '';
+
         setTimeout(() => {
-          newsletterForm.textContent = 'Subscribe';
-          newsletterForm.classList.remove('bg-green-600');
-          newsletterForm.classList.add('bg-gradient-to-r', 'from-blue-600', 'to-purple-600');
+          if (submitButton) {
+            submitButton.textContent = 'Subscribe';
+            submitButton.classList.remove('bg-green-600');
+          }
         }, 3000);
-      } else {
-        // Show error
+      } else if (emailInput) {
         emailInput.classList.add('border-red-500');
-        setTimeout(() => {
-          emailInput.classList.remove('border-red-500');
-        }, 2000);
+        setTimeout(() => emailInput.classList.remove('border-red-500'), 2000);
       }
     });
-  }
+  });
 </script>

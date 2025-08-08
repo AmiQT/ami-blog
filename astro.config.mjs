@@ -4,10 +4,20 @@ import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
+// Compute site/base dynamically for GitHub Pages if building in CI
+const isGitHubPages = process.env.GITHUB_PAGES === 'true' && !!process.env.GITHUB_REPOSITORY;
+let site;
+let base;
+
+if (isGitHubPages) {
+  const [owner, repo] = String(process.env.GITHUB_REPOSITORY).split('/');
+  site = `https://${owner}.github.io`;
+  base = `/${repo}`;
+}
+
 export default defineConfig({
-  // Remove base path for local development - will be set for deployment
-  // site: 'https://yourusername.github.io',
-  // base: '/ai-review-site',
+  site,
+  base,
   vite: {
     plugins: [tailwindcss()]
   }

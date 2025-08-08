@@ -21,7 +21,7 @@ import Layout from '../layouts/Layout.astro';
           <!-- Contact Form -->
           <div>
             <h2 class="text-3xl font-bold text-gray-900 mb-6">Send us a Message</h2>
-            <form class="space-y-6">
+            <form class="space-y-6" id="contact-form">
               <div>
                 <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Name</label>
                 <input 
@@ -160,3 +160,30 @@ import Layout from '../layouts/Layout.astro';
     </div>
   </section>
 </Layout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('contact-form');
+    if (!form) return;
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalText = submitBtn ? submitBtn.textContent : '';
+      if (submitBtn) {
+        submitBtn.textContent = 'Sending...';
+        submitBtn.disabled = true;
+      }
+
+      // Placeholder: integrate with your backend or Formspree/Netlify function
+      await new Promise(r => setTimeout(r, 800));
+
+      alert('Thanks! Your message has been sent.');
+      form.reset();
+      if (submitBtn) {
+        submitBtn.textContent = originalText || 'Send Message';
+        submitBtn.disabled = false;
+      }
+    });
+  });
+</script>

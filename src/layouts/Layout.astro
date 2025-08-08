@@ -1,23 +1,24 @@
 ---
 import '../styles/global.css';
-import type { SEOProps } from '../types/seo';
+// Removed unused SEOProps import (file not present)
 import Analytics from '../components/Analytics.astro';
+import CookieConsent from '../components/CookieConsent.astro';
 
 export interface Props {
   title: string;
   description?: string;
   image?: string;
-  type?: string;
+  type?: 'website' | 'article';
   publishedTime?: string;
   modifiedTime?: string;
   author?: string;
   tags?: string[];
 }
 
-const {
-  title,
-  description = "Expert AI tool reviews and analysis. Find the perfect AI solutions for your needs with comprehensive, unbiased reviews.",
-  image = "/images/ai-review-site-og.jpg",
+const { 
+  title, 
+  description = "Expert AI tool reviews, comparisons, and analysis. Find the perfect AI solutions for your needs with comprehensive insights and real-world testing.",
+  image = "/images/placeholder.svg",
   type = "website",
   publishedTime,
   modifiedTime,
@@ -25,46 +26,51 @@ const {
   tags = []
 } = Astro.props;
 
+// Social links from env (render only if provided)
+const TWITTER_URL = import.meta.env.PUBLIC_TWITTER_URL;
+const FACEBOOK_URL = import.meta.env.PUBLIC_FACEBOOK_URL;
+const LINKEDIN_URL = import.meta.env.PUBLIC_LINKEDIN_URL;
+
+// Generate canonical URL
 const canonicalURL = new URL(Astro.url.pathname, Astro.url.origin);
 
-// Structured data for the page
+// Generate structured data
 const structuredData = {
   "@context": "https://schema.org",
   "@type": type === "article" ? "Article" : "WebPage",
   "headline": title,
   "description": description,
-  "url": canonicalURL.href,
   "image": new URL(image, Astro.url.origin).href,
+  "url": canonicalURL.href,
   "publisher": {
     "@type": "Organization",
     "name": "AI Review Site",
     "logo": {
       "@type": "ImageObject",
-      "url": new URL("/images/ai-review-site-logo.png", Astro.url.origin).href
+      "url": new URL("/images/placeholder.svg", Astro.url.origin).href
     }
-  },
-  "author": {
-    "@type": "Person",
-    "name": author
-  },
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": canonicalURL.href
   }
 };
 
 // Add article-specific structured data
 if (type === "article" && publishedTime) {
-  structuredData.datePublished = publishedTime;
+  structuredData["@type"] = "Article";
+  structuredData["datePublished"] = publishedTime;
   if (modifiedTime) {
-    structuredData.dateModified = modifiedTime;
+    structuredData["dateModified"] = modifiedTime;
+  }
+  if (author) {
+    structuredData["author"] = {
+      "@type": "Person",
+      "name": author
+    };
   }
   if (tags.length > 0) {
-    structuredData.keywords = tags.join(", ");
+    structuredData["keywords"] = tags.join(", ");
   }
 }
 
-// Breadcrumb structured data
+// Generate breadcrumb structured data
 const breadcrumbData = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -84,7 +90,7 @@ if (Astro.url.pathname !== "/") {
   pathSegments.forEach((segment, index) => {
     const position = index + 2;
     const name = segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, " ");
-    const item = `${Astro.url.origin}/${pathSegments.slice(0, index + 1).join("/")}`;
+    const item = Astro.url.origin + "/" + pathSegments.slice(0, index + 1).join("/");
     
     breadcrumbData.itemListElement.push({
       "@type": "ListItem",
@@ -103,18 +109,11 @@ if (Astro.url.pathname !== "/") {
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    
+    <title>{title}</title>
+
     <!-- Canonical URL -->
     <link rel="canonical" href={canonicalURL.href} />
-    
-    <!-- Primary Meta Tags -->
-    <title>{title}</title>
-    <meta name="title" content={title} />
-    <meta name="description" content={description} />
-    <meta name="keywords" content={tags.length > 0 ? tags.join(", ") : "AI tools, artificial intelligence, AI reviews, productivity tools, writing assistants, marketing AI"} />
-    <meta name="author" content={author} />
-    <meta name="robots" content="index, follow" />
-    
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content={type} />
     <meta property="og:url" content={canonicalURL.href} />
@@ -122,91 +121,82 @@ if (Astro.url.pathname !== "/") {
     <meta property="og:description" content={description} />
     <meta property="og:image" content={new URL(image, Astro.url.origin).href} />
     <meta property="og:site_name" content="AI Review Site" />
-    <meta property="og:locale" content="en_US" />
-    
+
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content={canonicalURL.href} />
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
     <meta property="twitter:image" content={new URL(image, Astro.url.origin).href} />
-    <meta property="twitter:creator" content="@aireviewsite" />
-    
-    <!-- Additional Meta Tags -->
-    <meta name="theme-color" content="#2563eb" />
-    <meta name="msapplication-TileColor" content="#2563eb" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="AI Review Site" />
-    
+
     <!-- Article-specific meta tags -->
     {type === "article" && publishedTime && (
-      <meta property="article:published_time" content={publishedTime} />
-    )}
-    {type === "article" && modifiedTime && (
-      <meta property="article:modified_time" content={modifiedTime} />
-    )}
-    {type === "article" && author && (
-      <meta property="article:author" content={author} />
-    )}
-    {type === "article" && tags.length > 0 && (
       <>
-        {tags.map((tag) => (
-          <meta property="article:tag" content={tag} />
-        ))}
+        <meta property="article:published_time" content={publishedTime} />
+        {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+        {author && <meta property="article:author" content={author} />}
+        {tags.map(tag => <meta property="article:tag" content={tag} />)}
       </>
     )}
-    
+
     <!-- Structured Data -->
     <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
     <script type="application/ld+json" set:html={JSON.stringify(breadcrumbData)} />
-    
-    <!-- Preconnect to external domains -->
+
+    <!-- Preconnect to external domains for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;800&display=swap" rel="stylesheet">
-    
-    <!-- DNS prefetch for performance -->
-    <link rel="dns-prefetch" href="//www.google-analytics.com" />
-    <link rel="dns-prefetch" href="//www.googletagmanager.com" />
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
+    <link rel="preconnect" href="https://www.google-analytics.com" />
   </head>
   <body>
-    <!-- Navigation -->
-    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
-      <nav class="container mx-auto px-4 py-4">
-        <div class="flex justify-between items-center">
-          <a href="/" class="text-2xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
-            AI Review Site
-          </a>
-          <div class="hidden md:flex space-x-8">
-            <a href="/" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Home</a>
-            <a href="/blog" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Blog</a>
-            <a href="/search" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Search</a>
-            <a href="/premium" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Premium</a>
-            <a href="/about" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">About</a>
-            <a href="/contact" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Contact</a>
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+      <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between h-16">
+          <!-- Logo -->
+          <div class="flex items-center">
+            <a href="/" class="text-2xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
+              AI Review Site
+            </a>
           </div>
+
+          <!-- Desktop Navigation -->
+          <nav class="hidden md:flex items-center space-x-8">
+            <a href="/" class="text-gray-700 hover:text-blue-600 transition-colors">Home</a>
+            <a href="/blog" class="text-gray-700 hover:text-blue-600 transition-colors">Blog</a>
+            <a href="/search" class="text-gray-700 hover:text-blue-600 transition-colors">Search</a>
+            <a href="/premium" class="text-gray-700 hover:text-blue-600 transition-colors">Premium</a>
+            <a href="/about" class="text-gray-700 hover:text-blue-600 transition-colors">About</a>
+            <a href="/contact" class="text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
+          </nav>
+
           <!-- Mobile menu button -->
-          <button id="mobile-menu-button" class="md:hidden text-gray-700 hover:text-blue-600 transition-colors">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-          </button>
+          <div class="md:hidden">
+            <button id="mobile-menu-button" class="text-gray-700 hover:text-blue-600 transition-colors">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+            </button>
+          </div>
         </div>
-        <!-- Mobile menu -->
-        <div id="mobile-menu" class="md:hidden mt-4 space-y-2 hidden">
-          <a href="/" class="block py-2 text-gray-700 hover:text-blue-600 transition-colors">Home</a>
-          <a href="/blog" class="block py-2 text-gray-700 hover:text-blue-600 transition-colors">Blog</a>
-          <a href="/search" class="block py-2 text-gray-700 hover:text-blue-600 transition-colors">Search</a>
-          <a href="/premium" class="block py-2 text-gray-700 hover:text-blue-600 transition-colors">Premium</a>
-          <a href="/about" class="block py-2 text-gray-700 hover:text-blue-600 transition-colors">About</a>
-          <a href="/contact" class="block py-2 text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
+
+        <!-- Mobile Navigation -->
+        <div id="mobile-menu" class="md:hidden hidden">
+          <div class="px-2 pt-2 pb-3 space-y-1 border-t border-gray-200">
+            <a href="/" class="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Home</a>
+            <a href="/blog" class="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Blog</a>
+            <a href="/search" class="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Search</a>
+            <a href="/premium" class="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Premium</a>
+            <a href="/about" class="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">About</a>
+            <a href="/contact" class="block px-3 py-2 text-gray-700 hover:text-blue-600 transition-colors">Contact</a>
+          </div>
         </div>
-      </nav>
+      </div>
     </header>
 
-    <main class="min-h-screen">
+    <!-- Main Content -->
+    <main>
       <slot />
     </main>
 
@@ -214,40 +204,46 @@ if (Astro.url.pathname !== "/") {
     <footer class="bg-gray-900 text-white py-12">
       <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div class="md:col-span-2">
+          <!-- Company Info -->
+          <div class="col-span-1 md:col-span-2">
             <h3 class="text-xl font-bold mb-4">AI Review Site</h3>
             <p class="text-gray-300 mb-4">
-              Your trusted source for comprehensive AI insights, detailed reviews, and cutting-edge analysis. Stay ahead of the curve with our expert coverage of artificial intelligence technologies.
+              Expert insights and comprehensive analysis of AI tools to help you make informed decisions.
             </p>
             <div class="flex space-x-4">
-              <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              {TWITTER_URL && (
+              <a href={TWITTER_URL} rel="noopener noreferrer" target="_blank" aria-label="Twitter" class="text-gray-300 hover:text-white transition-colors">
                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
                 </svg>
-              </a>
-              <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              </a>)}
+              {FACEBOOK_URL && (
+              <a href={FACEBOOK_URL} rel="noopener noreferrer" target="_blank" aria-label="Facebook" class="text-gray-300 hover:text-white transition-colors">
                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/>
                 </svg>
-              </a>
-              <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              </a>)}
+              {LINKEDIN_URL && (
+              <a href={LINKEDIN_URL} rel="noopener noreferrer" target="_blank" aria-label="LinkedIn" class="text-gray-300 hover:text-white transition-colors">
                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                 </svg>
-              </a>
+              </a>)}
             </div>
           </div>
+
+          <!-- Quick Links -->
           <div>
             <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
             <ul class="space-y-2">
-              <li><a href="/" class="text-gray-300 hover:text-white transition-colors">Home</a></li>
-              <li><a href="/blog" class="text-gray-300 hover:text-white transition-colors">Blog</a></li>
-              <li><a href="/search" class="text-gray-300 hover:text-white transition-colors">Search</a></li>
-              <li><a href="/premium" class="text-gray-300 hover:text-white transition-colors">Premium</a></li>
-              <li><a href="/about" class="text-gray-300 hover:text-white transition-colors">About</a></li>
-              <li><a href="/contact" class="text-gray-300 hover:text-white transition-colors">Contact</a></li>
+              <li><a href="/blog" class="text-gray-300 hover:text-white transition-colors">Latest Reviews</a></li>
+              <li><a href="/search" class="text-gray-300 hover:text-white transition-colors">Search Tools</a></li>
+              <li><a href="/premium" class="text-gray-300 hover:text-white transition-colors">Premium Content</a></li>
+              <li><a href="/about" class="text-gray-300 hover:text-white transition-colors">About Us</a></li>
             </ul>
           </div>
+
+          <!-- Categories -->
           <div>
             <h4 class="text-lg font-semibold mb-4">Categories</h4>
             <ul class="space-y-2">
@@ -258,37 +254,63 @@ if (Astro.url.pathname !== "/") {
             </ul>
           </div>
         </div>
-        <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-300">
-          <p>&copy; 2024 AI Review Site. All rights reserved.</p>
+
+        <div class="border-t border-gray-800 mt-8 pt-8">
+          <div class="flex flex-col md:flex-row justify-between items-center">
+            <p class="text-gray-300 mb-4 md:mb-0">
+              © {new Date().getFullYear()} AI Review Site. All rights reserved.
+            </p>
+            <div class="flex flex-wrap gap-4 text-sm">
+              <a href="/privacy" class="text-gray-300 hover:text-white transition-colors">Privacy Policy</a>
+              <a href="/terms" class="text-gray-300 hover:text-white transition-colors">Terms of Service</a>
+              <a href="/contact" class="text-gray-300 hover:text-white transition-colors">Contact</a>
+              <button id="cookie-preferences" class="text-gray-300 hover:text-white transition-colors">Cookie Preferences</button>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
 
+    <!-- Mobile Menu Script -->
     <script>
-      // Mobile menu toggle
-      const mobileMenuButton = document.getElementById('mobile-menu-button');
-      const mobileMenu = document.getElementById('mobile-menu');
-      
-      mobileMenuButton?.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
+      document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        if (mobileMenuButton && mobileMenu) {
+          mobileMenuButton.addEventListener('click', function() {
+            mobileMenu.classList.toggle('hidden');
+          });
+        }
+
+        // Cookie preferences button
+        const cookiePrefsBtn = document.getElementById('cookie-preferences');
+        if (cookiePrefsBtn) {
+          cookiePrefsBtn.addEventListener('click', function() {
+            const cookieModal = document.getElementById('cookie-settings-modal');
+            if (cookieModal) {
+              cookieModal.classList.remove('hidden');
+            }
+          });
+        }
       });
     </script>
 
     <!-- Analytics Component -->
     <Analytics />
+    
+    <!-- Cookie Consent Component -->
+    <CookieConsent />
   </body>
 </html>
 
 <style is:global>
   html {
     font-family: system-ui, sans-serif;
-    background: #fff;
-    background-size: 224px;
   }
-  code {
-    background: #f1f1f1;
-    color: #d13178;
-    padding: 2px 6px;
-    border-radius: 6px;
+  
+  body {
+    margin: 0;
+    padding: 0;
   }
 </style>

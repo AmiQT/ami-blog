@@ -92,78 +92,7 @@ const { postSlug, postTitle } = Astro.props;
 
     <!-- Comments List -->
     <div id="comments-container">
-      <!-- Sample Comments (will be replaced with real data) -->
-      <div class="space-y-6">
-        <div class="bg-white border border-gray-200 rounded-lg p-6">
-          <div class="flex items-start justify-between mb-3">
-            <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <span class="text-blue-600 font-semibold">JD</span>
-              </div>
-              <div>
-                <div class="font-semibold text-gray-900">John Doe</div>
-                <div class="text-sm text-gray-500">2 days ago</div>
-              </div>
-            </div>
-            <div class="flex items-center space-x-1">
-              <span class="text-yellow-400">★★★★★</span>
-              <span class="text-sm text-gray-500">5.0</span>
-            </div>
-          </div>
-          <p class="text-gray-700 mb-4">
-            This comparison is incredibly helpful! I've been trying to decide between ChatGPT and Claude for my content creation needs. The detailed benchmarks really helped me understand the strengths of each tool. I ended up going with Claude for its better reasoning capabilities, and it's been working great for my technical writing.
-          </p>
-          <div class="flex items-center space-x-4 text-sm">
-            <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors comment-like" data-comment-id="1">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
-              </svg>
-              <span>12</span>
-            </button>
-            <button class="text-gray-500 hover:text-blue-600 transition-colors comment-reply" data-comment-id="1">
-              Reply
-            </button>
-            <button class="text-gray-500 hover:text-red-600 transition-colors comment-report" data-comment-id="1">
-              Report
-            </button>
-          </div>
-        </div>
-
-        <div class="bg-white border border-gray-200 rounded-lg p-6">
-          <div class="flex items-start justify-between mb-3">
-            <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <span class="text-green-600 font-semibold">SM</span>
-              </div>
-              <div>
-                <div class="font-semibold text-gray-900">Sarah Miller</div>
-                <div class="text-sm text-gray-500">1 week ago</div>
-              </div>
-            </div>
-            <div class="flex items-center space-x-1">
-              <span class="text-yellow-400">★★★★☆</span>
-              <span class="text-sm text-gray-500">4.0</span>
-            </div>
-          </div>
-          <p class="text-gray-700 mb-4">
-            Great analysis! I've been using both tools for different purposes. ChatGPT is excellent for creative writing and brainstorming, while Claude is better for analytical tasks. The pricing comparison was particularly useful - it helped me optimize my costs by using each tool for its strengths.
-          </p>
-          <div class="flex items-center space-x-4 text-sm">
-            <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors comment-like" data-comment-id="2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
-              </svg>
-              <span>8</span>
-            </button>
-            <button class="text-gray-500 hover:text-blue-600 transition-colors comment-reply" data-comment-id="2">
-              Reply
-            </button>
-            <button class="text-gray-500 hover:text-red-600 transition-colors comment-report" data-comment-id="2">
-              Report
-            </button>
-          </div>
-        </div>
-      </div>
+      <div class="space-y-6"></div>
     </div>
 
     <!-- Load More Comments -->
