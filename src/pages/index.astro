@@ -1,5 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import Testimonials from '../components/Testimonials.astro';
+import Newsletter from '../components/Newsletter.astro';
 import { getCollection } from 'astro:content';
 
 // Get the latest blog posts
@@ -11,25 +14,13 @@ const latestPosts = posts
 
 <Layout title="AI Review Site - Your Source for AI Insights and Reviews">
   <!-- Hero Section -->
-  <section class="bg-gradient-to-br from-blue-50 to-purple-50 py-20">
-    <div class="container mx-auto px-4 text-center">
-      <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-        Welcome to <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">AI Review Site</span>
-      </h1>
-      <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-        Your trusted source for comprehensive AI insights, detailed reviews, and cutting-edge analysis. 
-        Stay ahead of the curve with our expert coverage of artificial intelligence technologies.
-      </p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <a href="/blog" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
-          Explore Articles
-        </a>
-        <a href="/about" class="border-2 border-blue-600 text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-600 hover:text-white transition-all duration-300">
-          Learn More
-        </a>
-      </div>
-    </div>
-  </section>
+  <Hero 
+    title="Welcome to"
+    subtitle="Your trusted source for comprehensive AI insights, detailed reviews, and cutting-edge analysis. Stay ahead of the curve with our expert coverage of artificial intelligence technologies."
+    ctaText="Explore Articles"
+    ctaLink="/blog"
+    showStats={true}
+  />
 
   <!-- Features Section -->
   <section class="py-16 bg-white">
@@ -115,6 +106,12 @@ const latestPosts = posts
       </div>
     </div>
   </section>
+
+  <!-- Testimonials Section -->
+  <Testimonials />
+
+  <!-- Newsletter Section -->
+  <Newsletter />
 
   <!-- CTA Section -->
   <section class="py-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white">

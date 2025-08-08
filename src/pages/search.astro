@@ -5,6 +5,25 @@ import { getCollection } from 'astro:content';
 // Get all blog posts for search
 const allPosts = await getCollection('blog');
 const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+// Prepare search data from actual blog posts
+const searchData = posts.map(post => ({
+  title: post.data.title,
+  description: post.data.description,
+  url: `/blog/${post.slug}`,
+  tags: post.data.tags,
+  category: getCategoryFromTags(post.data.tags),
+  pubDate: post.data.pubDate
+}));
+
+// Helper function to determine category from tags
+function getCategoryFromTags(tags: string[]): string {
+  if (tags.includes('productivity') || tags.includes('notion')) return 'productivity';
+  if (tags.includes('writing') || tags.includes('grammarly')) return 'writing';
+  if (tags.includes('marketing') || tags.includes('content-creation') || tags.includes('jasper')) return 'marketing';
+  if (tags.includes('comparison') || tags.includes('chatgpt') || tags.includes('claude')) return 'productivity';
+  return 'general';
+}
 ---
 
 <Layout title="Search - AI Review Site" description="Search through our comprehensive collection of AI tool reviews and insights">
@@ -19,7 +38,7 @@ const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.
 
   <section class="py-12 bg-gray-50">
     <div class="container mx-auto px-4">
-      <div class="max-w-2xl mx-auto">
+      <div class="max-w-4xl mx-auto">
         <div class="relative mb-8">
           <input 
             type="text" 
@@ -30,6 +49,21 @@ const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.
           <svg class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
           </svg>
+        </div>
+        
+        <div class="flex flex-wrap gap-2 mb-6" id="searchFilters">
+          <button class="px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition-colors filter-btn active" data-filter="all">
+            All ({searchData.length})
+          </button>
+          <button class="px-4 py-2 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors filter-btn" data-filter="productivity">
+            Productivity ({searchData.filter(item => item.category === 'productivity').length})
+          </button>
+          <button class="px-4 py-2 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors filter-btn" data-filter="writing">
+            Writing ({searchData.filter(item => item.category === 'writing').length})
+          </button>
+          <button class="px-4 py-2 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors filter-btn" data-filter="marketing">
+            Marketing ({searchData.filter(item => item.category === 'marketing').length})
+          </button>
         </div>
         
         <div id="searchResults" class="space-y-6">
@@ -88,58 +122,50 @@ const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.
   </section>
 </Layout>
 
-<script>
+<script define:vars={{ searchData }}>
   // Search functionality
   const searchInput = document.getElementById('searchInput');
   const searchResults = document.getElementById('searchResults');
   const noResults = document.getElementById('noResults');
+  const filterButtons = document.querySelectorAll('.filter-btn');
   
-  // Sample search data (in a real app, this would come from the server)
-  const searchData = [
-    {
-      title: "Notion AI Review: The Smart Productivity Companion",
-      description: "An in-depth analysis of Notion AI's productivity features, pricing, and how it compares to other AI tools",
-      url: "/blog/notion-ai-productivity-review",
-      tags: ["notion", "ai", "productivity", "review"],
-      category: "productivity"
-    },
-    {
-      title: "Grammarly AI Review: The Smart Writing Assistant",
-      description: "An in-depth analysis of Grammarly AI's writing enhancement capabilities, pricing, and how it compares to other AI writing tools",
-      url: "/blog/grammarly-ai-writing-assistant-review",
-      tags: ["grammarly", "ai", "writing", "productivity", "review"],
-      category: "writing"
-    },
-    {
-      title: "Jasper AI Review: The Ultimate AI Content Creation Platform",
-      description: "A detailed analysis of Jasper AI's content generation capabilities, pricing, and how it revolutionizes content creation workflows",
-      url: "/blog/jasper-ai-content-creation-review",
-      tags: ["jasper", "ai", "content-creation", "marketing", "review"],
-      category: "marketing"
-    },
-    {
-      title: "ChatGPT vs Claude: A Comprehensive Comparison",
-      description: "Detailed comparison of ChatGPT and Claude AI assistants, exploring their strengths, weaknesses, and best use cases",
-      url: "/blog/chatgpt-vs-claude-comparison",
-      tags: ["chatgpt", "claude", "ai", "comparison", "review"],
-      category: "productivity"
-    }
-  ];
+  let currentFilter = 'all';
+  let currentQuery = '';
 
-  function performSearch(query) {
-    const results = searchData.filter(item => 
-      item.title.toLowerCase().includes(query.toLowerCase()) ||
-      item.description.toLowerCase().includes(query.toLowerCase()) ||
-      item.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
-    );
+  function performSearch(query, filter = 'all') {
+    const results = searchData.filter(item => {
+      const matchesQuery = query === '' || 
+        item.title.toLowerCase().includes(query.toLowerCase()) ||
+        item.description.toLowerCase().includes(query.toLowerCase()) ||
+        item.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()));
+      
+      const matchesFilter = filter === 'all' || item.category === filter;
+      
+      return matchesQuery && matchesFilter;
+    });
     
     displayResults(results);
   }
 
   function searchByCategory(category) {
-    const results = searchData.filter(item => item.category === category);
-    searchInput.value = category;
-    displayResults(results);
+    currentFilter = category;
+    currentQuery = '';
+    searchInput.value = '';
+    updateFilterButtons();
+    performSearch('', category);
+  }
+
+  function updateFilterButtons() {
+    filterButtons.forEach(btn => {
+      const filter = btn.getAttribute('data-filter');
+      if (filter === currentFilter) {
+        btn.classList.remove('bg-gray-100', 'text-gray-800');
+        btn.classList.add('bg-blue-100', 'text-blue-800');
+      } else {
+        btn.classList.remove('bg-blue-100', 'text-blue-800');
+        btn.classList.add('bg-gray-100', 'text-gray-800');
+      }
+    });
   }
 
   function displayResults(results) {
@@ -152,9 +178,18 @@ const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.
     noResults.classList.add('hidden');
     searchResults.innerHTML = results.map(item => `
       <article class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-        <h3 class="text-xl font-semibold mb-3 text-gray-900">
-          <a href="${item.url}" class="hover:text-blue-600 transition-colors">${item.title}</a>
-        </h3>
+        <div class="flex justify-between items-start mb-3">
+          <h3 class="text-xl font-semibold text-gray-900 flex-1">
+            <a href="${item.url}" class="hover:text-blue-600 transition-colors">${item.title}</a>
+          </h3>
+          <span class="text-sm text-gray-500 ml-4">
+            ${new Date(item.pubDate).toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'short', 
+              day: 'numeric' 
+            })}
+          </span>
+        </div>
         <p class="text-gray-600 mb-4">${item.description}</p>
         <div class="flex flex-wrap gap-2">
           ${item.tags.map(tag => `<span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">${tag}</span>`).join('')}
@@ -165,13 +200,16 @@ const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.
 
   // Event listeners
   searchInput.addEventListener('input', (e) => {
-    const query = e.target.value;
-    if (query.length > 0) {
-      performSearch(query);
-    } else {
-      searchResults.innerHTML = '';
-      noResults.classList.add('hidden');
-    }
+    currentQuery = e.target.value;
+    performSearch(currentQuery, currentFilter);
+  });
+
+  filterButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentFilter = btn.getAttribute('data-filter');
+      updateFilterButtons();
+      performSearch(currentQuery, currentFilter);
+    });
   });
 
   // Initialize with all results
