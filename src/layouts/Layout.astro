@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import type { SEOProps } from '../types/seo';
 import Analytics from '../components/Analytics.astro';
 
 export interface Props {
@@ -272,6 +273,9 @@ if (Astro.url.pathname !== "/") {
         mobileMenu.classList.toggle('hidden');
       });
     </script>
+
+    <!-- Analytics Component -->
+    <Analytics />
   </body>
 </html>
 

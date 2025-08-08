@@ -1,0 +1,452 @@
+---
+// Comments component with ratings and user interactions
+interface Props {
+  postSlug: string;
+  postTitle: string;
+}
+
+const { postSlug, postTitle } = Astro.props;
+---
+
+<section class="mt-16 pt-8 border-t border-gray-200">
+  <div class="max-w-4xl mx-auto">
+    <!-- Comments Header -->
+    <div class="flex items-center justify-between mb-8">
+      <h3 class="text-2xl font-bold text-gray-900">Comments & Discussion</h3>
+      <div class="flex items-center space-x-4">
+        <button 
+          id="sort-comments" 
+          class="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          Sort by: <span id="sort-type">Latest</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Article Rating -->
+    <div class="bg-gray-50 rounded-lg p-6 mb-8">
+      <h4 class="text-lg font-semibold text-gray-900 mb-4">Rate this article</h4>
+      <div class="flex items-center space-x-2 mb-4">
+        <div class="flex space-x-1" id="rating-stars">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <button 
+              class="text-2xl text-gray-300 hover:text-yellow-400 transition-colors rating-star" 
+              data-rating={star}
+              title={`Rate ${star} star${star > 1 ? 's' : ''}`}
+            >
+              ★
+            </button>
+          ))}
+        </div>
+        <span class="text-sm text-gray-600 ml-2">
+          <span id="rating-text">Click to rate</span>
+        </span>
+      </div>
+      <div class="text-sm text-gray-500">
+        <span id="total-ratings">0</span> ratings • Average: <span id="average-rating">0.0</span>/5
+      </div>
+    </div>
+
+    <!-- Comment Form -->
+    <div class="bg-white border border-gray-200 rounded-lg p-6 mb-8">
+      <h4 class="text-lg font-semibold text-gray-900 mb-4">Add a comment</h4>
+      <form id="comment-form" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input 
+            type="text" 
+            id="comment-name" 
+            placeholder="Your name" 
+            required
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+          <input 
+            type="email" 
+            id="comment-email" 
+            placeholder="Your email (optional)" 
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+        <textarea 
+          id="comment-content" 
+          rows="4" 
+          placeholder="Share your thoughts, questions, or experiences with this AI tool..." 
+          required
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+        ></textarea>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <label class="flex items-center">
+              <input type="checkbox" id="comment-notify" class="mr-2">
+              <span class="text-sm text-gray-600">Notify me of replies</span>
+            </label>
+          </div>
+          <button 
+            type="submit" 
+            class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+          >
+            Post Comment
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Comments List -->
+    <div id="comments-container">
+      <!-- Sample Comments (will be replaced with real data) -->
+      <div class="space-y-6">
+        <div class="bg-white border border-gray-200 rounded-lg p-6">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <span class="text-blue-600 font-semibold">JD</span>
+              </div>
+              <div>
+                <div class="font-semibold text-gray-900">John Doe</div>
+                <div class="text-sm text-gray-500">2 days ago</div>
+              </div>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="text-yellow-400">★★★★★</span>
+              <span class="text-sm text-gray-500">5.0</span>
+            </div>
+          </div>
+          <p class="text-gray-700 mb-4">
+            This comparison is incredibly helpful! I've been trying to decide between ChatGPT and Claude for my content creation needs. The detailed benchmarks really helped me understand the strengths of each tool. I ended up going with Claude for its better reasoning capabilities, and it's been working great for my technical writing.
+          </p>
+          <div class="flex items-center space-x-4 text-sm">
+            <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors comment-like" data-comment-id="1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+              </svg>
+              <span>12</span>
+            </button>
+            <button class="text-gray-500 hover:text-blue-600 transition-colors comment-reply" data-comment-id="1">
+              Reply
+            </button>
+            <button class="text-gray-500 hover:text-red-600 transition-colors comment-report" data-comment-id="1">
+              Report
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-lg p-6">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <span class="text-green-600 font-semibold">SM</span>
+              </div>
+              <div>
+                <div class="font-semibold text-gray-900">Sarah Miller</div>
+                <div class="text-sm text-gray-500">1 week ago</div>
+              </div>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="text-yellow-400">★★★★☆</span>
+              <span class="text-sm text-gray-500">4.0</span>
+            </div>
+          </div>
+          <p class="text-gray-700 mb-4">
+            Great analysis! I've been using both tools for different purposes. ChatGPT is excellent for creative writing and brainstorming, while Claude is better for analytical tasks. The pricing comparison was particularly useful - it helped me optimize my costs by using each tool for its strengths.
+          </p>
+          <div class="flex items-center space-x-4 text-sm">
+            <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors comment-like" data-comment-id="2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+              </svg>
+              <span>8</span>
+            </button>
+            <button class="text-gray-500 hover:text-blue-600 transition-colors comment-reply" data-comment-id="2">
+              Reply
+            </button>
+            <button class="text-gray-500 hover:text-red-600 transition-colors comment-report" data-comment-id="2">
+              Report
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Load More Comments -->
+    <div class="text-center mt-8">
+      <button 
+        id="load-more-comments" 
+        class="bg-gray-100 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+      >
+        Load More Comments
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Rating system
+    const ratingStars = document.querySelectorAll('.rating-star');
+    const ratingText = document.getElementById('rating-text');
+    const totalRatings = document.getElementById('total-ratings');
+    const averageRating = document.getElementById('average-rating');
+    
+    let currentRating = 0;
+    let totalRatingsCount = 15; // Sample data
+    let averageRatingValue = 4.2; // Sample data
+    
+    // Update display
+    function updateRatingDisplay() {
+      totalRatings.textContent = totalRatingsCount;
+      averageRating.textContent = averageRatingValue.toFixed(1);
+    }
+    
+    // Handle star clicks
+    ratingStars.forEach((star, index) => {
+      star.addEventListener('click', function() {
+        const rating = index + 1;
+        currentRating = rating;
+        
+        // Update star display
+        ratingStars.forEach((s, i) => {
+          if (i < rating) {
+            s.classList.remove('text-gray-300');
+            s.classList.add('text-yellow-400');
+          } else {
+            s.classList.remove('text-yellow-400');
+            s.classList.add('text-gray-300');
+          }
+        });
+        
+        // Update text
+        ratingText.textContent = `You rated ${rating} star${rating > 1 ? 's' : ''}`;
+        
+        // Track rating event
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'article_rating', {
+            'event_category': 'engagement',
+            'event_label': 'article_rating',
+            'value': rating,
+            'custom_parameter_1': '{{postSlug}}',
+            'custom_parameter_2': '{{postTitle}}'
+          });
+        }
+        
+        // Simulate rating submission
+        setTimeout(() => {
+          totalRatingsCount++;
+          const newAverage = ((averageRatingValue * (totalRatingsCount - 1)) + rating) / totalRatingsCount;
+          averageRatingValue = newAverage;
+          updateRatingDisplay();
+          
+          // Show success message
+          ratingText.textContent = 'Rating submitted!';
+          ratingText.classList.add('text-green-600');
+        }, 500);
+      });
+      
+      // Hover effects
+      star.addEventListener('mouseenter', function() {
+        const hoverRating = index + 1;
+        ratingStars.forEach((s, i) => {
+          if (i < hoverRating) {
+            s.classList.remove('text-gray-300');
+            s.classList.add('text-yellow-400');
+          }
+        });
+      });
+      
+      star.addEventListener('mouseleave', function() {
+        ratingStars.forEach((s, i) => {
+          if (i >= currentRating) {
+            s.classList.remove('text-yellow-400');
+            s.classList.add('text-gray-300');
+          }
+        });
+      });
+    });
+    
+    // Initialize rating display
+    updateRatingDisplay();
+    
+    // Comment form handling
+    const commentForm = document.getElementById('comment-form');
+    if (commentForm) {
+      commentForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('comment-name').value;
+        const email = document.getElementById('comment-email').value;
+        const content = document.getElementById('comment-content').value;
+        const notify = document.getElementById('comment-notify').checked;
+        
+        // Track comment submission
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'comment_submission', {
+            'event_category': 'engagement',
+            'event_label': 'comment_posted',
+            'value': 1,
+            'custom_parameter_1': '{{postSlug}}',
+            'custom_parameter_2': '{{postTitle}}'
+          });
+        }
+        
+        // Simulate comment submission
+        const submitButton = commentForm.querySelector('button[type="submit"]');
+        const originalText = submitButton.textContent;
+        submitButton.textContent = 'Posting...';
+        submitButton.disabled = true;
+        
+        setTimeout(() => {
+          // Add new comment to the list
+          const commentsContainer = document.getElementById('comments-container');
+          const newComment = document.createElement('div');
+          newComment.className = 'bg-white border border-gray-200 rounded-lg p-6';
+          newComment.innerHTML = `
+            <div class="flex items-start justify-between mb-3">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span class="text-blue-600 font-semibold">${name.charAt(0).toUpperCase()}</span>
+                </div>
+                <div>
+                  <div class="font-semibold text-gray-900">${name}</div>
+                  <div class="text-sm text-gray-500">Just now</div>
+                </div>
+              </div>
+            </div>
+            <p class="text-gray-700 mb-4">${content}</p>
+            <div class="flex items-center space-x-4 text-sm">
+              <button class="flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors comment-like" data-comment-id="new">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+                </svg>
+                <span>0</span>
+              </button>
+              <button class="text-gray-500 hover:text-blue-600 transition-colors comment-reply" data-comment-id="new">
+                Reply
+              </button>
+              <button class="text-gray-500 hover:text-red-600 transition-colors comment-report" data-comment-id="new">
+                Report
+              </button>
+            </div>
+          `;
+          
+          commentsContainer.querySelector('.space-y-6').prepend(newComment);
+          
+          // Reset form
+          commentForm.reset();
+          submitButton.textContent = originalText;
+          submitButton.disabled = false;
+          
+          // Show success message
+          const successMessage = document.createElement('div');
+          successMessage.className = 'bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg mt-4';
+          successMessage.textContent = 'Comment posted successfully!';
+          commentForm.appendChild(successMessage);
+          
+          setTimeout(() => {
+            successMessage.remove();
+          }, 3000);
+        }, 1000);
+      });
+    }
+    
+    // Comment interactions
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('.comment-like')) {
+        const button = e.target.closest('.comment-like');
+        const countSpan = button.querySelector('span');
+        const currentCount = parseInt(countSpan.textContent);
+        countSpan.textContent = currentCount + 1;
+        
+        // Track like event
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'comment_like', {
+            'event_category': 'engagement',
+            'event_label': 'comment_liked',
+            'value': 1
+          });
+        }
+      }
+      
+      if (e.target.closest('.comment-reply')) {
+        const commentId = e.target.closest('.comment-reply').getAttribute('data-comment-id');
+        
+        // Track reply event
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'comment_reply', {
+            'event_category': 'engagement',
+            'event_label': 'reply_clicked',
+            'value': 1
+          });
+        }
+        
+        // Focus on comment form
+        document.getElementById('comment-content').focus();
+        document.getElementById('comment-content').placeholder = `Replying to comment ${commentId}...`;
+      }
+      
+      if (e.target.closest('.comment-report')) {
+        const commentId = e.target.closest('.comment-report').getAttribute('data-comment-id');
+        
+        // Track report event
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'comment_report', {
+            'event_category': 'moderation',
+            'event_label': 'comment_reported',
+            'value': 1
+          });
+        }
+        
+        // Show report dialog
+        if (confirm('Report this comment as inappropriate?')) {
+          alert('Thank you for your report. We will review this comment.');
+        }
+      }
+    });
+    
+    // Sort comments
+    const sortButton = document.getElementById('sort-comments');
+    const sortType = document.getElementById('sort-type');
+    let sortOrder = 'latest';
+    
+    if (sortButton) {
+      sortButton.addEventListener('click', function() {
+        sortOrder = sortOrder === 'latest' ? 'popular' : 'latest';
+        sortType.textContent = sortOrder === 'latest' ? 'Latest' : 'Popular';
+        
+        // Track sort event
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'comments_sort', {
+            'event_category': 'engagement',
+            'event_label': `sort_${sortOrder}`,
+            'value': 1
+          });
+        }
+        
+        // Simulate sorting (in real implementation, this would reorder comments)
+        console.log(`Comments sorted by: ${sortOrder}`);
+      });
+    }
+    
+    // Load more comments
+    const loadMoreButton = document.getElementById('load-more-comments');
+    if (loadMoreButton) {
+      loadMoreButton.addEventListener('click', function() {
+        // Track load more event
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'comments_load_more', {
+            'event_category': 'engagement',
+            'event_label': 'load_more_comments',
+            'value': 1
+          });
+        }
+        
+        // Simulate loading more comments
+        loadMoreButton.textContent = 'Loading...';
+        loadMoreButton.disabled = true;
+        
+        setTimeout(() => {
+          loadMoreButton.textContent = 'Load More Comments';
+          loadMoreButton.disabled = false;
+          alert('More comments would be loaded here in a real implementation.');
+        }, 1000);
+      });
+    }
+  });
+</script>
