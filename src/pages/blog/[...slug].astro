@@ -31,29 +31,29 @@ const breadcrumbItems = [
   image={post.data.heroImage}
 >
   <!-- Hero Section -->
-  <section class="py-20 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white">
-    <div class="container mx-auto px-4 text-center">
+  <section class="py-16 bg-white border-b border-gray-200">
+    <div class="container mx-auto px-4">
       <div class="max-w-4xl mx-auto">
-        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-          {post.data.title}
-        </h1>
-        <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto leading-relaxed">
-          {post.data.description}
-        </p>
+        <Breadcrumbs items={breadcrumbItems} />
+        <div class="text-center">
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight tracking-tight">
+            {post.data.title}
+          </h1>
+          <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            {post.data.description}
+          </p>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- Article Content -->
-  <section class="py-24 bg-gray-50">
+  <section class="py-12 bg-white">
     <div class="container mx-auto px-4">
-      <div class="max-w-6xl mx-auto">
-        <Breadcrumbs items={breadcrumbItems} />
-        <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-16 lg:p-20">
-          <BlogPost post={post} content={Content}>
-            <Content />
-          </BlogPost>
-        </div>
+      <div class="max-w-4xl mx-auto">
+        <BlogPost post={post} content={Content}>
+          <Content />
+        </BlogPost>
       </div>
     </div>
   </section>
