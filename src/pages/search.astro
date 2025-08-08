@@ -88,35 +88,35 @@ function getCategoryFromTags(tags: string[]): string {
     <div class="container mx-auto px-4">
       <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Browse by Category</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <div class="text-center p-6 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 hover:shadow-lg transition-shadow cursor-pointer" onclick="searchByCategory('productivity')">
-          <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-            </svg>
-          </div>
-          <h3 class="text-xl font-semibold mb-3 text-gray-900">Productivity</h3>
-          <p class="text-gray-600">AI tools to boost your efficiency and workflow.</p>
-        </div>
-        
-        <div class="text-center p-6 rounded-lg bg-gradient-to-br from-purple-50 to-purple-100 hover:shadow-lg transition-shadow cursor-pointer" onclick="searchByCategory('writing')">
-          <div class="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-            </svg>
-          </div>
-          <h3 class="text-xl font-semibold mb-3 text-gray-900">Writing & Content</h3>
-          <p class="text-gray-600">AI-powered writing assistants and content creation tools.</p>
-        </div>
-        
-        <div class="text-center p-6 rounded-lg bg-gradient-to-br from-green-50 to-green-100 hover:shadow-lg transition-shadow cursor-pointer" onclick="searchByCategory('marketing')">
-          <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-            </svg>
-          </div>
-          <h3 class="text-xl font-semibold mb-3 text-gray-900">Marketing</h3>
-          <p class="text-gray-600">AI tools for digital marketing and content strategy.</p>
-        </div>
+                 <a href="/category/productivity" class="text-center p-6 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 hover:shadow-lg transition-shadow cursor-pointer block">
+           <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+             <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+             </svg>
+           </div>
+           <h3 class="text-xl font-semibold mb-3 text-gray-900">Productivity</h3>
+           <p class="text-gray-600">AI tools to boost your efficiency and workflow.</p>
+         </a>
+         
+         <a href="/category/writing" class="text-center p-6 rounded-lg bg-gradient-to-br from-purple-50 to-purple-100 hover:shadow-lg transition-shadow cursor-pointer block">
+           <div class="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+             <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+             </svg>
+           </div>
+           <h3 class="text-xl font-semibold mb-3 text-gray-900">Writing & Content</h3>
+           <p class="text-gray-600">AI-powered writing assistants and content creation tools.</p>
+         </a>
+         
+         <a href="/category/marketing" class="text-center p-6 rounded-lg bg-gradient-to-br from-green-50 to-green-100 hover:shadow-lg transition-shadow cursor-pointer block">
+           <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+             <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+             </svg>
+           </div>
+           <h3 class="text-xl font-semibold mb-3 text-gray-900">Marketing</h3>
+           <p class="text-gray-600">AI tools for digital marketing and content strategy.</p>
+         </a>
       </div>
     </div>
   </section>
