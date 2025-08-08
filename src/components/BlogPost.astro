@@ -27,16 +27,65 @@ const relatedPosts = allPosts
     ...p,
     body: p.body || ''
   }));
+
+// Extract headings for table of contents
+const extractHeadings = (content: string) => {
+  const headingRegex = /^#{1,6}\s+(.+)$/gm;
+  const headings: Array<{ level: number; text: string; id: string }> = [];
+  let match;
+
+  while ((match = headingRegex.exec(content)) !== null) {
+    const level = match[0].indexOf(' ');
+    const text = match[1];
+    const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    headings.push({ level, text, id });
+  }
+
+  return headings;
+};
+
+const headings = extractHeadings(content.body || '');
 ---
 
-<article class="max-w-4xl mx-auto">
+<article class="max-w-4xl mx-auto relative">
+  <!-- Reading Progress Bar -->
+  <div class="fixed top-0 left-0 w-full h-1 bg-gray-200 z-50">
+    <div id="reading-progress" class="h-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-300" style="width: 0%"></div>
+  </div>
+
+  <!-- Table of Contents (Desktop) -->
+  {headings.length > 0 && (
+    <div class="hidden lg:block fixed top-20 right-8 w-64 max-h-screen overflow-y-auto bg-white rounded-xl shadow-lg border border-gray-200 p-6 z-40">
+      <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+        <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+        </svg>
+        Table of Contents
+      </h3>
+      <nav class="space-y-2">
+        {headings.map((heading) => (
+          <a
+            href={`#${heading.id}`}
+            class={`block text-sm hover:text-blue-600 transition-colors ${
+              heading.level === 1 ? 'font-bold text-gray-900' :
+              heading.level === 2 ? 'font-semibold text-gray-800 ml-2' :
+              'text-gray-600 ml-4'
+            }`}
+          >
+            {heading.text}
+          </a>
+        ))}
+      </nav>
+    </div>
+  )}
+
   <!-- Article Header -->
   <header class="mb-16">
     <!-- Meta Information -->
     <div class="flex items-center text-sm text-gray-500 mb-8">
       <div class="flex items-center">
         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 01-2 2v12a2 2 0 002 2z"></path>
         </svg>
         <time datetime={post.data.pubDate.toISOString()}>
           {formattedDate}
@@ -93,8 +142,34 @@ const relatedPosts = allPosts
     </div>
   </header>
 
+  <!-- Table of Contents (Mobile) -->
+  {headings.length > 0 && (
+    <div class="lg:hidden mb-12 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl border border-gray-200 p-6">
+      <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+        <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+        </svg>
+        Table of Contents
+      </h3>
+      <nav class="space-y-2">
+        {headings.map((heading) => (
+          <a
+            href={`#${heading.id}`}
+            class={`block text-sm hover:text-blue-600 transition-colors ${
+              heading.level === 1 ? 'font-bold text-gray-900' :
+              heading.level === 2 ? 'font-semibold text-gray-800 ml-2' :
+              'text-gray-600 ml-4'
+            }`}
+          >
+            {heading.text}
+          </a>
+        ))}
+      </nav>
+    </div>
+  )}
+
   <!-- Article Content -->
-  <div class="prose prose-xl max-w-none mb-20">
+  <div class="prose prose-xl max-w-none mb-20" id="article-content">
     <slot />
   </div>
 
@@ -107,8 +182,8 @@ const relatedPosts = allPosts
       Share this article
     </h3>
     <div class="flex flex-wrap gap-4">
-      <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.data.title)}&url=${encodeURIComponent(Astro.url.href)}`} 
-         target="_blank" 
+      <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.data.title)}&url=${encodeURIComponent(Astro.url.href)}`}
+         target="_blank"
          rel="noopener noreferrer"
          class="flex items-center px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 transform hover:scale-105 shadow-md">
         <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
@@ -116,8 +191,8 @@ const relatedPosts = allPosts
         </svg>
         Share on Twitter
       </a>
-      <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(Astro.url.href)}`} 
-         target="_blank" 
+      <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(Astro.url.href)}`}
+         target="_blank"
          rel="noopener noreferrer"
          class="flex items-center px-6 py-3 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition-all duration-200 transform hover:scale-105 shadow-md">
         <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
@@ -125,7 +200,7 @@ const relatedPosts = allPosts
         </svg>
         Share on LinkedIn
       </a>
-      <button onclick="navigator.clipboard.writeText(window.location.href)" 
+      <button onclick="navigator.clipboard.writeText(window.location.href)"
               class="flex items-center px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all duration-200 transform hover:scale-105 shadow-md">
         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
@@ -159,17 +234,17 @@ const relatedPosts = allPosts
                 <span class="mx-2">•</span>
                 <span>{Math.ceil((relatedPost.body || '').split(' ').length / 200)} min read</span>
               </div>
-              
+
               <h4 class="text-lg font-bold mb-3 text-gray-900 line-clamp-2 hover:text-blue-600 transition-colors">
                 <a href={`/blog/${relatedPost.slug}`}>
                   {relatedPost.data.title}
                 </a>
               </h4>
-              
+
               <p class="text-gray-600 mb-4 line-clamp-3 text-sm leading-relaxed">
                 {relatedPost.data.description}
               </p>
-              
+
               <div class="flex justify-between items-center">
                 <a href={`/blog/${relatedPost.slug}`} class="text-blue-600 hover:text-blue-800 font-semibold transition-colors text-sm">
                   Read More →
@@ -188,317 +263,381 @@ const relatedPosts = allPosts
       </div>
     </div>
   )}
-</article>
 
-<style>
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
-  .line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  /* Professional Content Typography & Structure */
-  .prose {
-    color: #374151;
-    font-size: 1.25rem;
-    line-height: 1.9;
-    max-width: 65ch;
-    margin: 0 auto;
-  }
-  
-  /* Headings with proper hierarchy and spacing */
-  .prose h1 {
-    color: #111827;
-    font-size: 3rem;
-    font-weight: 800;
-    margin-top: 4rem;
-    margin-bottom: 2rem;
-    line-height: 1.1;
-    letter-spacing: -0.025em;
-  }
-  
-  .prose h2 {
-    color: #111827;
-    font-size: 2.25rem;
-    font-weight: 700;
-    margin-top: 4rem;
-    margin-bottom: 1.5rem;
-    line-height: 1.2;
-    letter-spacing: -0.025em;
-    border-bottom: 3px solid #e5e7eb;
-    padding-bottom: 0.75rem;
-  }
-  
-  .prose h3 {
-    color: #111827;
-    font-size: 1.75rem;
-    font-weight: 600;
-    margin-top: 3rem;
-    margin-bottom: 1.25rem;
-    line-height: 1.3;
-    letter-spacing: -0.025em;
-  }
-  
-  .prose h4 {
-    color: #111827;
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-top: 2.5rem;
-    margin-bottom: 1rem;
-    line-height: 1.4;
-  }
-  
-  .prose h5 {
-    color: #111827;
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-top: 2rem;
-    margin-bottom: 0.75rem;
-    line-height: 1.4;
-  }
-  
-  .prose h6 {
-    color: #111827;
-    font-size: 1.125rem;
-    font-weight: 600;
-    margin-top: 1.5rem;
-    margin-bottom: 0.5rem;
-    line-height: 1.4;
-  }
-  
-  /* Paragraphs with optimal spacing */
-  .prose p {
-    margin-bottom: 2rem;
-    line-height: 1.9;
-    color: #4b5563;
-    font-size: 1.125rem;
-  }
-  
-  /* Lists with proper spacing and styling */
-  .prose ul, .prose ol {
-    margin-bottom: 2rem;
-    padding-left: 2.5rem;
-  }
-  
-  .prose li {
-    margin-bottom: 1rem;
-    line-height: 1.8;
-    color: #4b5563;
-  }
-  
-  .prose ul li {
-    list-style-type: disc;
-    color: #4b5563;
-    position: relative;
-  }
-  
-  .prose ol li {
-    list-style-type: decimal;
-    color: #4b5563;
-    position: relative;
-  }
-  
-  /* Enhanced blockquotes */
-  .prose blockquote {
-    border-left: 5px solid #3b82f6;
-    padding: 2rem 3rem;
-    margin: 3rem 0;
-    font-style: italic;
-    color: #6b7280;
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    border-radius: 0 1rem 1rem 0;
-    font-size: 1.25rem;
-    line-height: 1.7;
-    position: relative;
-  }
-  
-  .prose blockquote::before {
-    content: '"';
-    font-size: 4rem;
-    color: #3b82f6;
-    position: absolute;
-    top: -1rem;
-    left: 1rem;
-    font-family: serif;
-  }
-  
-  /* Code styling */
-  .prose code {
-    background-color: #f3f4f6;
-    padding: 0.375rem 0.75rem;
-    border-radius: 0.5rem;
-    font-size: 0.875rem;
-    color: #dc2626;
-    font-weight: 500;
-    border: 1px solid #e5e7eb;
-  }
-  
-  .prose pre {
-    background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-    color: #f9fafb;
-    padding: 2rem;
-    border-radius: 1rem;
-    overflow-x: auto;
-    margin: 3rem 0;
-    border: 1px solid #4b5563;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .prose pre code {
-    background: transparent;
-    padding: 0;
-    color: inherit;
-    font-weight: normal;
-    border: none;
-  }
-  
-  /* Text emphasis */
-  .prose strong {
-    font-weight: 700;
-    color: #111827;
-  }
-  
-  .prose em {
-    font-style: italic;
-    color: #6b7280;
-  }
-  
-  /* Links */
-  .prose a {
-    color: #3b82f6;
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 3px;
-    transition: all 0.2s ease;
-    font-weight: 500;
-  }
-  
-  .prose a:hover {
-    color: #2563eb;
-    text-decoration-thickness: 3px;
-  }
-  
-  /* Tables */
-  .prose table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 3rem 0;
-    border-radius: 1rem;
-    overflow: hidden;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .prose th {
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-    color: white;
-    padding: 1.25rem;
-    text-align: left;
-    font-weight: 600;
-    font-size: 0.875rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  
-  .prose td {
-    padding: 1.25rem;
-    border-bottom: 1px solid #e5e7eb;
-    background-color: white;
-    color: #4b5563;
-  }
-  
-  .prose tr:nth-child(even) td {
-    background-color: #f9fafb;
-  }
-  
-  .prose tr:hover td {
-    background-color: #f3f4f6;
-  }
-  
-  /* Images */
-  .prose img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 1rem;
-    margin: 3rem 0;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e5e7eb;
-  }
-  
-  /* Horizontal rules */
-  .prose hr {
-    border: none;
-    height: 2px;
-    background: linear-gradient(90deg, transparent 0%, #e5e7eb 50%, transparent 100%);
-    margin: 4rem 0;
-  }
-  
-  /* Definition lists */
-  .prose dl {
-    margin: 2rem 0;
-  }
-  
-  .prose dt {
-    font-weight: 600;
-    color: #111827;
-    margin-bottom: 0.5rem;
-  }
-  
-  .prose dd {
-    margin-bottom: 1.5rem;
-    color: #4b5563;
-    padding-left: 1rem;
-  }
-  
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
+  <style>
+    /* Professional Content Typography & Structure */
     .prose {
-      font-size: 1.125rem;
-      line-height: 1.8;
+      color: #374151;
+      font-size: 1.25rem;
+      line-height: 1.9;
+      max-width: 65ch;
+      margin: 0 auto;
     }
-    
+
+    /* Headings with proper hierarchy and spacing */
     .prose h1 {
-      font-size: 2.5rem;
+      color: #111827;
+      font-size: 3rem;
+      font-weight: 800;
+      margin-top: 4rem;
+      margin-bottom: 2rem;
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+      scroll-margin-top: 2rem;
     }
-    
+
     .prose h2 {
-      font-size: 2rem;
+      color: #111827;
+      font-size: 2.25rem;
+      font-weight: 700;
+      margin-top: 4rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
+      letter-spacing: -0.025em;
+      border-bottom: 3px solid #e5e7eb;
+      padding-bottom: 0.75rem;
+      scroll-margin-top: 2rem;
     }
-    
+
     .prose h3 {
-      font-size: 1.5rem;
+      color: #111827;
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-top: 3rem;
+      margin-bottom: 1.25rem;
+      line-height: 1.4;
+      letter-spacing: -0.025em;
+      scroll-margin-top: 2rem;
     }
-    
-    .prose blockquote {
-      padding: 1.5rem 2rem;
+
+    .prose h4 {
+      color: #111827;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-top: 2.5rem;
+      margin-bottom: 1rem;
+      line-height: 1.4;
+      scroll-margin-top: 2rem;
+    }
+
+    .prose h5 {
+      color: #111827;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.4;
+      scroll-margin-top: 2rem;
+    }
+
+    .prose h6 {
+      color: #111827;
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+      line-height: 1.4;
+      scroll-margin-top: 2rem;
+    }
+
+    /* Paragraphs with optimal spacing */
+    .prose p {
+      margin-bottom: 2rem;
+      line-height: 1.9;
+      color: #4b5563;
       font-size: 1.125rem;
     }
-    
+
+    /* Lists with proper spacing and styling */
+    .prose ul, .prose ol {
+      margin-bottom: 2rem;
+      padding-left: 2.5rem;
+    }
+
+    .prose li {
+      margin-bottom: 1rem;
+      line-height: 1.8;
+      color: #4b5563;
+    }
+
+    .prose ul li {
+      list-style-type: disc;
+      color: #4b5563;
+      position: relative;
+    }
+
+    .prose ol li {
+      list-style-type: decimal;
+      color: #4b5563;
+      position: relative;
+    }
+
+    /* Enhanced blockquotes */
+    .prose blockquote {
+      border-left: 5px solid #3b82f6;
+      padding: 2rem 3rem;
+      margin: 3rem 0;
+      font-style: italic;
+      color: #6b7280;
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border-radius: 0 1rem 1rem 0;
+      font-size: 1.25rem;
+      line-height: 1.7;
+      position: relative;
+    }
+
+    .prose blockquote::before {
+      content: '"';
+      font-size: 4rem;
+      color: #3b82f6;
+      position: absolute;
+      top: -1rem;
+      left: 1rem;
+      font-family: serif;
+    }
+
+    /* Code styling */
+    .prose code {
+      background-color: #f3f4f6;
+      padding: 0.375rem 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      color: #dc2626;
+      font-weight: 500;
+      border: 1px solid #e5e7eb;
+    }
+
     .prose pre {
-      padding: 1.5rem;
+      background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+      color: #f9fafb;
+      padding: 2rem;
+      border-radius: 1rem;
+      overflow-x: auto;
+      margin: 3rem 0;
+      border: 1px solid #4b5563;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
     }
-  }
-  
-  /* Print styles */
-  @media print {
-    .prose {
-      font-size: 12pt;
-      line-height: 1.6;
+
+    .prose pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+      font-weight: normal;
+      border: none;
     }
-    
-    .prose h1, .prose h2, .prose h3 {
-      page-break-after: avoid;
+
+    /* Text emphasis */
+    .prose strong {
+      font-weight: 700;
+      color: #111827;
     }
-    
-    .prose p, .prose blockquote {
-      page-break-inside: avoid;
+
+    .prose em {
+      font-style: italic;
+      color: #6b7280;
     }
-  }
-</style>
+
+    /* Links */
+    .prose a {
+      color: #3b82f6;
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 3px;
+      transition: all 0.2s ease;
+      font-weight: 500;
+    }
+
+    .prose a:hover {
+      color: #2563eb;
+      text-decoration-thickness: 3px;
+    }
+
+    /* Tables */
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 3rem 0;
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    .prose th {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: white;
+      padding: 1.25rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .prose td {
+      padding: 1.25rem;
+      border-bottom: 1px solid #e5e7eb;
+      background-color: white;
+      color: #4b5563;
+    }
+
+    .prose tr:nth-child(even) td {
+      background-color: #f9fafb;
+    }
+
+    .prose tr:hover td {
+      background-color: #f3f4f6;
+    }
+
+    /* Images */
+    .prose img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 1rem;
+      margin: 3rem 0;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e5e7eb;
+    }
+
+    /* Horizontal rules */
+    .prose hr {
+      border: none;
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, #e5e7eb 50%, transparent 100%);
+      margin: 4rem 0;
+    }
+
+    /* Definition lists */
+    .prose dl {
+      margin: 2rem 0;
+    }
+
+    .prose dt {
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 0.5rem;
+    }
+
+    .prose dd {
+      margin-bottom: 1.5rem;
+      color: #4b5563;
+      padding-left: 1rem;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .prose {
+        font-size: 1.125rem;
+        line-height: 1.8;
+      }
+
+      .prose h1 {
+        font-size: 2.5rem;
+      }
+
+      .prose h2 {
+        font-size: 2rem;
+      }
+
+      .prose h3 {
+        font-size: 1.5rem;
+      }
+
+      .prose blockquote {
+        padding: 1.5rem 2rem;
+        font-size: 1.125rem;
+      }
+
+      .prose pre {
+        padding: 1.5rem;
+      }
+    }
+
+    /* Print styles */
+    @media print {
+      .prose {
+        font-size: 12pt;
+        line-height: 1.6;
+      }
+
+      .prose h1, .prose h2, .prose h3 {
+        page-break-after: avoid;
+      }
+
+      .prose p, .prose blockquote {
+        page-break-inside: avoid;
+      }
+    }
+
+    /* Line clamp utilities */
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .line-clamp-3 {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  </style>
+
+  <script>
+    // Reading progress indicator
+    function updateReadingProgress() {
+      const article = document.getElementById('article-content');
+      const progressBar = document.getElementById('reading-progress');
+
+      if (!article || !progressBar) return;
+
+      const articleHeight = article.offsetHeight;
+      const windowHeight = window.innerHeight;
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const articleTop = article.offsetTop;
+
+      const scrollPosition = scrollTop - articleTop;
+      const maxScroll = articleHeight - windowHeight;
+
+      if (scrollPosition <= 0) {
+        progressBar.style.width = '0%';
+      } else if (scrollPosition >= maxScroll) {
+        progressBar.style.width = '100%';
+      } else {
+        const progress = (scrollPosition / maxScroll) * 100;
+        progressBar.style.width = progress + '%';
+      }
+    }
+
+    // Smooth scrolling for table of contents links
+    function initSmoothScrolling() {
+      const links = document.querySelectorAll('a[href^="#"]');
+
+      links.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const targetId = link.getAttribute('href');
+          const targetElement = document.querySelector(targetId);
+
+          if (targetElement) {
+            const offsetTop = targetElement.offsetTop - 100; // Account for fixed header
+            window.scrollTo({
+              top: offsetTop,
+              behavior: 'smooth'
+            });
+          }
+        });
+      });
+    }
+
+    // Initialize interactive features
+    document.addEventListener('DOMContentLoaded', () => {
+      updateReadingProgress();
+      initSmoothScrolling();
+
+      window.addEventListener('scroll', updateReadingProgress);
+      window.addEventListener('resize', updateReadingProgress);
+    });
+  </script>
+</article>
