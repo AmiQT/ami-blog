@@ -1,1 +1,7 @@
 @import "tailwindcss";
+
+/* Custom styles for blog post content */
+.prose p {
+  margin-bottom: 1.75rem; /* Increases space between paragraphs */
+  text-align: justify;      /* Justifies the text */
+}
