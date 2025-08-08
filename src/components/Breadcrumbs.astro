@@ -9,7 +9,7 @@ export interface Props {
 const { items } = Astro.props;
 ---
 
-<nav class="flex items-center space-x-3 text-sm text-gray-600 mb-8 p-4 bg-gray-50 rounded-lg" aria-label="Breadcrumb">
+<nav class="flex items-center space-x-3 text-sm text-gray-600 mb-12 p-6 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl border border-gray-100 shadow-sm" aria-label="Breadcrumb">
   {items.map((item, index) => (
     <>
       {index > 0 && (
