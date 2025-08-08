@@ -30,19 +30,31 @@ const breadcrumbItems = [
   description={post.data.description}
   image={post.data.heroImage}
 >
-  <section class="py-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+  <!-- Hero Section -->
+  <section class="py-20 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white">
     <div class="container mx-auto px-4 text-center">
-      <h1 class="text-4xl md:text-5xl font-bold mb-4">{post.data.title}</h1>
-      <p class="text-xl opacity-90 max-w-3xl mx-auto">{post.data.description}</p>
+      <div class="max-w-4xl mx-auto">
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+          {post.data.title}
+        </h1>
+        <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto leading-relaxed">
+          {post.data.description}
+        </p>
+      </div>
     </div>
   </section>
 
-  <section class="py-16 bg-white">
+  <!-- Article Content -->
+  <section class="py-20 bg-gray-50">
     <div class="container mx-auto px-4">
-      <Breadcrumbs items={breadcrumbItems} />
-      <BlogPost post={post} content={Content}>
-        <Content />
-      </BlogPost>
+      <div class="max-w-5xl mx-auto">
+        <Breadcrumbs items={breadcrumbItems} />
+        <div class="bg-white rounded-2xl shadow-xl p-8 md:p-12">
+          <BlogPost post={post} content={Content}>
+            <Content />
+          </BlogPost>
+        </div>
+      </div>
     </div>
   </section>
 </Layout>
