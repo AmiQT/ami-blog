@@ -2,7 +2,7 @@
 title: "OpenAI Unleashes GPT-5: A Deep Dive into its Architecture and Breakthrough Capabilities"
 description: "GPT-5 is here. We explore its revolutionary 'unified system' architecture, analyze its state-of-the-art performance, and break down what its new capabilities mean for the future of AI."
 pubDate: "Aug 08 2025"
-heroImage: "https://placehold.co/1200x600/2563eb/white?text=GPT-5+Has+Arrived"
+heroImage: "https://placehold.co/1200x600/0d1117/7c3aed?text=Digital+Synapse"
 ---
 
 OpenAI today announced the launch of GPT-5, its next-generation artificial intelligence model, making it available to all ChatGPT users, including those on the free plan. The new model introduces a sophisticated “unified system” architecture and sets a new state-of-the-art in performance, with significant leaps in reasoning, coding, and creative collaboration.
@@ -17,7 +17,7 @@ The most significant innovation in GPT-5 is its departure from a single, monolit
 
 This architecture, combined with a massive 272,000-token context window, creates a more seamless and efficient user experience by automatically matching the complexity of the task to the right amount of computational power.
 
-![A diagram illustrating the GPT-5 unified system. A central router receives a prompt and directs it to either a 'Fast & Efficient Model' or a 'Deep Reasoning Model' based on complexity.](https://placehold.co/800x450/2c2c2c/ffffff?text=GPT-5+Unified+System+Architecture)
+![A diagram illustrating the GPT-5 unified system. A central router receives a prompt and directs it to either a 'Fast & Efficient Model' or a 'Deep Reasoning Model' based on complexity.](https://placehold.co/800x450/1a1a1a/ffffff?text=Prompt+%E2%86%92+%5BRouter%5D+%E2%86%92+Models)
 
 ### Beyond the Hype: Breakthrough Capabilities
 
@@ -42,7 +42,7 @@ While a full, official benchmark report is still forthcoming, initial results re
 *   **Graduate-Level Reasoning (GPQA):** It achieves an 88.4% on this difficult question-answering benchmark, showcasing its advanced ability to reason through complex academic topics.
 *   **Multimodal Understanding (MMMU):** With a score of 84.2%, GPT-5 demonstrates a powerful ability to understand and process information from both text and images simultaneously.
 
-![A bar chart comparing the performance of GPT-5 against GPT-4 and other models on the SWE-bench, showing GPT-5 with a clear lead.](https://placehold.co/800x450/2c2c2c/ffffff?text=Benchmark%3A+SWE-bench+Verified)
+![A bar chart comparing the performance of GPT-5 against GPT-4 and other models on the SWE-bench, showing GPT-5 with a clear lead.](https://placehold.co/800x450/1a1a1a/00ff99?text=Benchmark%3A+SWE-bench+%7C%7C+GPT-5%3A+74.9%25)
 
 ### How to Access GPT-5
 

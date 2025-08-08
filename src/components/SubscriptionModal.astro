@@ -17,7 +17,7 @@ const {
 <div id={id} class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
   <div class="bg-white rounded-xl max-w-md w-full p-8 relative">
     <!-- Close Button -->
-    <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+    <button class="close-modal-btn absolute top-4 right-4 text-gray-400 hover:text-gray-600">
       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
       </svg>
@@ -116,28 +116,49 @@ const {
 </div>
 
 <script>
-  function closeModal() {
-    const modal = document.getElementById('{id}');
-    modal.classList.add('hidden');
-  }
-
-  // Newsletter form submission
-  document.getElementById('newsletter-form')?.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const email = document.getElementById('email-input').value;
-    
-    // Here you would typically send this to your email service
-    console.log('Newsletter signup:', email);
-    
-    // Show success message
-    alert('Thank you for subscribing! Check your email for confirmation.');
-    closeModal();
-  });
-
-  // Close modal when clicking outside
-  document.getElementById('{id}')?.addEventListener('click', function(e) {
-    if (e.target === this) {
-      closeModal();
+  // Make closeModal function globally accessible
+  window.closeModal = function(modalId = '{id}') {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.classList.add('hidden');
     }
+  };
+
+  // Initialize modal functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('{id}');
+    if (!modal) return;
+
+    // Close button functionality
+    const closeBtn = modal.querySelector('.close-modal-btn');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function() {
+        closeModal('{id}');
+      });
+    }
+
+    // Newsletter form submission
+    const form = modal.querySelector('#newsletter-form');
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const emailInput = modal.querySelector('#email-input');
+        const email = emailInput ? emailInput.value : '';
+        
+        // Here you would typically send this to your email service
+        console.log('Newsletter signup:', email);
+        
+        // Show success message
+        alert('Thank you for subscribing! Check your email for confirmation.');
+        closeModal('{id}');
+      });
+    }
+
+    // Close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        closeModal('{id}');
+      }
+    });
   });
 </script>
