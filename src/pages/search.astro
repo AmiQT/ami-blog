@@ -1,217 +1,341 @@
 ---
-import Layout from '../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
 
-// Get all blog posts for search
-const allPosts = await getCollection('blog');
-const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const posts = await getCollection('blog');
 
-// Prepare search data from actual blog posts
+// Helper function to get category from tags
+const getCategoryFromTags = (tags: string[]) => {
+  if (tags.includes('productivity')) return 'productivity';
+  if (tags.includes('writing')) return 'writing';
+  if (tags.includes('marketing')) return 'marketing';
+  if (tags.includes('comparison')) return 'comparison';
+  return 'other';
+};
+
+// Prepare search data
 const searchData = posts.map(post => ({
   title: post.data.title,
   description: post.data.description,
-  url: `/blog/${post.slug}`,
   tags: post.data.tags,
   category: getCategoryFromTags(post.data.tags),
-  pubDate: post.data.pubDate
+  pubDate: post.data.pubDate,
+  slug: post.slug,
+  readingTime: Math.ceil((post.body || '').split(' ').length / 200)
 }));
 
-// Helper function to determine category from tags
-function getCategoryFromTags(tags: string[]): string {
-  if (tags.includes('productivity') || tags.includes('notion')) return 'productivity';
-  if (tags.includes('writing') || tags.includes('grammarly')) return 'writing';
-  if (tags.includes('marketing') || tags.includes('content-creation') || tags.includes('jasper')) return 'marketing';
-  if (tags.includes('comparison') || tags.includes('chatgpt') || tags.includes('claude')) return 'productivity';
-  return 'general';
-}
+// Get category counts
+const categoryCounts = {
+  all: searchData.length,
+  productivity: searchData.filter(item => item.category === 'productivity').length,
+  writing: searchData.filter(item => item.category === 'writing').length,
+  marketing: searchData.filter(item => item.category === 'marketing').length,
+  comparison: searchData.filter(item => item.category === 'comparison').length
+};
 ---
 
-<Layout title="Search - AI Review Site" description="Search through our comprehensive collection of AI tool reviews and insights">
-  <section class="py-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-    <div class="container mx-auto px-4 text-center">
-      <h1 class="text-4xl font-bold mb-4">Search AI Reviews</h1>
-      <p class="text-xl opacity-90">
-        Find the perfect AI tool for your needs with our comprehensive search.
-      </p>
-    </div>
-  </section>
-
-  <section class="py-12 bg-gray-50">
-    <div class="container mx-auto px-4">
-      <div class="max-w-4xl mx-auto">
-        <div class="relative mb-8">
-          <input 
-            type="text" 
-            id="searchInput"
-            placeholder="Search for AI tools, features, or topics..." 
-            class="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
-          >
-          <svg class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
-        </div>
-        
-        <div class="flex flex-wrap gap-2 mb-6" id="searchFilters">
-          <button class="px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition-colors filter-btn active" data-filter="all">
-            All ({searchData.length})
-          </button>
-          <button class="px-4 py-2 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors filter-btn" data-filter="productivity">
-            Productivity ({searchData.filter(item => item.category === 'productivity').length})
-          </button>
-          <button class="px-4 py-2 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors filter-btn" data-filter="writing">
-            Writing ({searchData.filter(item => item.category === 'writing').length})
-          </button>
-          <button class="px-4 py-2 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors filter-btn" data-filter="marketing">
-            Marketing ({searchData.filter(item => item.category === 'marketing').length})
-          </button>
-        </div>
-        
-        <div id="searchResults" class="space-y-6">
-          <!-- Search results will be populated here -->
-        </div>
-        
-        <div id="noResults" class="hidden text-center py-12">
-          <div class="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33"></path>
-            </svg>
+<Layout title="Search AI Reviews - Find the Perfect AI Tools">
+  <div class="min-h-screen bg-white">
+    <!-- Search Header -->
+    <section class="py-16 bg-gray-50 border-b border-gray-200">
+      <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto text-center">
+          <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            Search AI Reviews
+          </h1>
+          <p class="text-xl text-gray-600 mb-8">
+            Find the perfect AI tools and technologies for your needs
+          </p>
+          
+          <!-- Search Input -->
+          <div class="relative max-w-2xl mx-auto">
+            <div class="relative">
+              <input 
+                type="text" 
+                id="searchInput"
+                placeholder="Search for AI tools, features, or topics..."
+                class="w-full px-6 py-4 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+              >
+              <div class="absolute inset-y-0 right-0 flex items-center pr-4">
+                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+              </div>
+            </div>
           </div>
-          <h3 class="text-xl font-semibold text-gray-900 mb-2">No Results Found</h3>
-          <p class="text-gray-600">Try different keywords or browse our categories below.</p>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Categories Section -->
-  <section class="py-16 bg-white">
-    <div class="container mx-auto px-4">
-      <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Browse by Category</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                 <a href="/category/productivity" class="text-center p-6 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 hover:shadow-lg transition-shadow cursor-pointer block">
-           <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-             <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-             </svg>
-           </div>
-           <h3 class="text-xl font-semibold mb-3 text-gray-900">Productivity</h3>
-           <p class="text-gray-600">AI tools to boost your efficiency and workflow.</p>
-         </a>
-         
-         <a href="/category/writing" class="text-center p-6 rounded-lg bg-gradient-to-br from-purple-50 to-purple-100 hover:shadow-lg transition-shadow cursor-pointer block">
-           <div class="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-             <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-             </svg>
-           </div>
-           <h3 class="text-xl font-semibold mb-3 text-gray-900">Writing & Content</h3>
-           <p class="text-gray-600">AI-powered writing assistants and content creation tools.</p>
-         </a>
-         
-         <a href="/category/marketing" class="text-center p-6 rounded-lg bg-gradient-to-br from-green-50 to-green-100 hover:shadow-lg transition-shadow cursor-pointer block">
-           <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-             <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-             </svg>
-           </div>
-           <h3 class="text-xl font-semibold mb-3 text-gray-900">Marketing</h3>
-           <p class="text-gray-600">AI tools for digital marketing and content strategy.</p>
-         </a>
+    <!-- Search Results Section -->
+    <section class="py-12">
+      <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto">
+          <!-- Filters and Controls -->
+          <div class="mb-8">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <!-- Category Filters -->
+              <div class="flex flex-wrap gap-2">
+                <button 
+                  data-category="all" 
+                  class="category-filter px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                >
+                  All ({categoryCounts.all})
+                </button>
+                <button 
+                  data-category="productivity" 
+                  class="category-filter px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+                >
+                  Productivity ({categoryCounts.productivity})
+                </button>
+                <button 
+                  data-category="writing" 
+                  class="category-filter px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+                >
+                  Writing ({categoryCounts.writing})
+                </button>
+                <button 
+                  data-category="marketing" 
+                  class="category-filter px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+                >
+                  Marketing ({categoryCounts.marketing})
+                </button>
+                <button 
+                  data-category="comparison" 
+                  class="category-filter px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+                >
+                  Comparisons ({categoryCounts.comparison})
+                </button>
+              </div>
+
+              <!-- Sort Options -->
+              <div class="flex items-center gap-2">
+                <label class="text-sm text-gray-600">Sort by:</label>
+                <select id="sortSelect" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none">
+                  <option value="relevance">Relevance</option>
+                  <option value="date">Date (Newest)</option>
+                  <option value="date-oldest">Date (Oldest)</option>
+                  <option value="title">Title (A-Z)</option>
+                  <option value="reading-time">Reading Time</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Results Count -->
+          <div class="mb-6">
+            <p id="resultsCount" class="text-gray-600">
+              Showing {searchData.length} results
+            </p>
+          </div>
+
+          <!-- Search Results -->
+          <div id="searchResults" class="space-y-8">
+            {searchData.map((item) => (
+              <article class="group border-b border-gray-200 pb-8 last:border-b-0">
+                <div class="flex items-start justify-between mb-3">
+                  <div class="flex items-center gap-3">
+                    <time class="text-sm text-gray-500">
+                      {item.pubDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </time>
+                    <span class="text-gray-300">•</span>
+                    <span class="text-sm text-gray-500">{item.readingTime} min read</span>
+                  </div>
+                  <span class="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full capitalize">
+                    {item.category}
+                  </span>
+                </div>
+
+                <h2 class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                  <a href={`/blog/${item.slug}`}>
+                    {item.title}
+                  </a>
+                </h2>
+
+                <p class="text-gray-600 mb-4 leading-relaxed">
+                  {item.description}
+                </p>
+
+                <div class="flex items-center justify-between">
+                  <div class="flex flex-wrap gap-2">
+                    {item.tags.slice(0, 3).map((tag) => (
+                      <a href={`/category/${tag.toLowerCase()}`} class="text-blue-600 hover:text-blue-800 underline text-sm">
+                        {tag}
+                      </a>
+                    ))}
+                  </div>
+                  <a href={`/blog/${item.slug}`} class="text-blue-600 hover:text-blue-800 font-medium">
+                    Read Review →
+                  </a>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <!-- No Results Message -->
+          <div id="noResults" class="hidden text-center py-12">
+            <div class="max-w-md mx-auto">
+              <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+              <h3 class="text-xl font-semibold text-gray-900 mb-2">No results found</h3>
+              <p class="text-gray-600 mb-4">
+                Try adjusting your search terms or browse our categories to find what you're looking for.
+              </p>
+              <a href="/blog" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                Browse All Reviews
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
-</Layout>
+    </section>
+  </div>
 
-<script define:vars={{ searchData }}>
-  // Search functionality
-  const searchInput = document.getElementById('searchInput');
-  const searchResults = document.getElementById('searchResults');
-  const noResults = document.getElementById('noResults');
-  const filterButtons = document.querySelectorAll('.filter-btn');
-  
-  let currentFilter = 'all';
-  let currentQuery = '';
+  <script define:vars={{ searchData }}>
+    let currentResults = [...searchData];
+    let currentCategory = 'all';
+    let currentSort = 'relevance';
+    let searchTerm = '';
 
-  function performSearch(query, filter = 'all') {
-    const results = searchData.filter(item => {
-      const matchesQuery = query === '' || 
-        item.title.toLowerCase().includes(query.toLowerCase()) ||
-        item.description.toLowerCase().includes(query.toLowerCase()) ||
-        item.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()));
-      
-      const matchesFilter = filter === 'all' || item.category === filter;
-      
-      return matchesQuery && matchesFilter;
-    });
-    
-    displayResults(results);
-  }
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+    const noResults = document.getElementById('noResults');
+    const resultsCount = document.getElementById('resultsCount');
+    const categoryFilters = document.querySelectorAll('.category-filter');
+    const sortSelect = document.getElementById('sortSelect');
 
-  function searchByCategory(category) {
-    currentFilter = category;
-    currentQuery = '';
-    searchInput.value = '';
-    updateFilterButtons();
-    performSearch('', category);
-  }
+    // Search functionality
+    function performSearch() {
+      let filtered = [...searchData];
 
-  function updateFilterButtons() {
-    filterButtons.forEach(btn => {
-      const filter = btn.getAttribute('data-filter');
-      if (filter === currentFilter) {
-        btn.classList.remove('bg-gray-100', 'text-gray-800');
-        btn.classList.add('bg-blue-100', 'text-blue-800');
-      } else {
-        btn.classList.remove('bg-blue-100', 'text-blue-800');
-        btn.classList.add('bg-gray-100', 'text-gray-800');
+      // Filter by search term
+      if (searchTerm.trim()) {
+        const term = searchTerm.toLowerCase();
+        filtered = filtered.filter(item => 
+          item.title.toLowerCase().includes(term) ||
+          item.description.toLowerCase().includes(term) ||
+          item.tags.some(tag => tag.toLowerCase().includes(term))
+        );
       }
-    });
-  }
 
-  function displayResults(results) {
-    if (results.length === 0) {
-      searchResults.innerHTML = '';
-      noResults.classList.remove('hidden');
-      return;
+      // Filter by category
+      if (currentCategory !== 'all') {
+        filtered = filtered.filter(item => item.category === currentCategory);
+      }
+
+      // Sort results
+      filtered = sortResults(filtered, currentSort);
+
+      currentResults = filtered;
+      displayResults();
     }
-    
-    noResults.classList.add('hidden');
-    searchResults.innerHTML = results.map(item => `
-      <article class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-        <div class="flex justify-between items-start mb-3">
-          <h3 class="text-xl font-semibold text-gray-900 flex-1">
-            <a href="${item.url}" class="hover:text-blue-600 transition-colors">${item.title}</a>
-          </h3>
-          <span class="text-sm text-gray-500 ml-4">
-            ${new Date(item.pubDate).toLocaleDateString('en-US', { 
-              year: 'numeric', 
-              month: 'short', 
-              day: 'numeric' 
-            })}
-          </span>
-        </div>
-        <p class="text-gray-600 mb-4">${item.description}</p>
-        <div class="flex flex-wrap gap-2">
-          ${item.tags.map(tag => `<span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">${tag}</span>`).join('')}
-        </div>
-      </article>
-    `).join('');
-  }
 
-  // Event listeners
-  searchInput.addEventListener('input', (e) => {
-    currentQuery = e.target.value;
-    performSearch(currentQuery, currentFilter);
-  });
+    // Sort functionality
+    function sortResults(results, sortBy) {
+      switch (sortBy) {
+        case 'date':
+          return results.sort((a, b) => b.pubDate - a.pubDate);
+        case 'date-oldest':
+          return results.sort((a, b) => a.pubDate - b.pubDate);
+        case 'title':
+          return results.sort((a, b) => a.title.localeCompare(b.title));
+        case 'reading-time':
+          return results.sort((a, b) => b.readingTime - a.readingTime);
+        default:
+          return results;
+      }
+    }
 
-  filterButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      currentFilter = btn.getAttribute('data-filter');
-      updateFilterButtons();
-      performSearch(currentQuery, currentFilter);
+    // Display results
+    function displayResults() {
+      if (currentResults.length === 0) {
+        searchResults.classList.add('hidden');
+        noResults.classList.remove('hidden');
+        resultsCount.textContent = 'No results found';
+      } else {
+        searchResults.classList.remove('hidden');
+        noResults.classList.add('hidden');
+        resultsCount.textContent = `Showing ${currentResults.length} result${currentResults.length === 1 ? '' : 's'}`;
+
+        // Update results display
+        const resultsHTML = currentResults.map(item => `
+          <article class="group border-b border-gray-200 pb-8 last:border-b-0">
+            <div class="flex items-start justify-between mb-3">
+              <div class="flex items-center gap-3">
+                <time class="text-sm text-gray-500">
+                  ${item.pubDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </time>
+                <span class="text-gray-300">•</span>
+                <span class="text-sm text-gray-500">${item.readingTime} min read</span>
+              </div>
+              <span class="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full capitalize">
+                ${item.category}
+              </span>
+            </div>
+
+            <h2 class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+              <a href="/blog/${item.slug}">
+                ${item.title}
+              </a>
+            </h2>
+
+            <p class="text-gray-600 mb-4 leading-relaxed">
+              ${item.description}
+            </p>
+
+            <div class="flex items-center justify-between">
+              <div class="flex flex-wrap gap-2">
+                ${item.tags.slice(0, 3).map(tag => 
+                  `<a href="/category/${tag.toLowerCase()}" class="text-blue-600 hover:text-blue-800 underline text-sm">${tag}</a>`
+                ).join('')}
+              </div>
+              <a href="/blog/${item.slug}" class="text-blue-600 hover:text-blue-800 font-medium">
+                Read Review →
+              </a>
+            </div>
+          </article>
+        `).join('');
+
+        searchResults.innerHTML = resultsHTML;
+      }
+    }
+
+    // Event listeners
+    searchInput.addEventListener('input', (e) => {
+      searchTerm = e.target.value;
+      performSearch();
     });
-  });
 
-  // Initialize with all results
-  displayResults(searchData);
-</script>
+    categoryFilters.forEach(filter => {
+      filter.addEventListener('click', (e) => {
+        // Update active filter
+        categoryFilters.forEach(f => {
+          f.classList.remove('bg-blue-600', 'text-white');
+          f.classList.add('bg-gray-100', 'text-gray-700');
+        });
+        e.target.classList.remove('bg-gray-100', 'text-gray-700');
+        e.target.classList.add('bg-blue-600', 'text-white');
+
+        currentCategory = e.target.dataset.category;
+        performSearch();
+      });
+    });
+
+    sortSelect.addEventListener('change', (e) => {
+      currentSort = e.target.value;
+      performSearch();
+    });
+
+    // Initialize
+    displayResults();
+  </script>
+</Layout>

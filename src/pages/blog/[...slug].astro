@@ -23,13 +23,21 @@ const breadcrumbItems = [
   { label: 'Blog', href: '/blog' },
   { label: post.data.title }
 ];
+
+// SEO metadata
+const seoProps = {
+  title: post.data.title,
+  description: post.data.description,
+  image: post.data.heroImage || '/images/ai-review-site-og.jpg',
+  type: 'article',
+  publishedTime: post.data.pubDate.toISOString(),
+  modifiedTime: post.data.updatedDate ? post.data.updatedDate.toISOString() : post.data.pubDate.toISOString(),
+  author: 'AI Review Team',
+  tags: post.data.tags
+};
 ---
 
-<Layout 
-  title={post.data.title}
-  description={post.data.description}
-  image={post.data.heroImage}
->
+<Layout {...seoProps}>
   <!-- Hero Section -->
   <section class="py-16 bg-white border-b border-gray-200">
     <div class="container mx-auto px-4">

@@ -1,108 +1,152 @@
 ---
+import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import Hero from '../components/Hero.astro';
 import Testimonials from '../components/Testimonials.astro';
 import Newsletter from '../components/Newsletter.astro';
-import { getCollection } from 'astro:content';
 
-// Get the latest blog posts
 const posts = await getCollection('blog');
 const latestPosts = posts
-  .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())
-  .slice(0, 3);
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 6);
 ---
 
-<Layout title="AI Review Site - Your Source for AI Insights and Reviews">
+<Layout title="AI Review Site - Expert AI Tool Reviews and Analysis">
   <!-- Hero Section -->
   <Hero 
-    title="Welcome to"
-    subtitle="Your trusted source for comprehensive AI insights, detailed reviews, and cutting-edge analysis. Stay ahead of the curve with our expert coverage of artificial intelligence technologies."
-    ctaText="Explore Articles"
+    title="Expert AI Tool Reviews"
+    subtitle="Comprehensive analysis of the latest AI tools and technologies to help you make informed decisions"
+    ctaText="Explore Reviews"
     ctaLink="/blog"
     showStats={true}
   />
 
-  <!-- Features Section -->
+  <!-- Latest Articles Section -->
   <section class="py-16 bg-white">
     <div class="container mx-auto px-4">
-      <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">What We Offer</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="text-center p-6 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100">
-          <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-            </svg>
-          </div>
-          <h3 class="text-xl font-semibold mb-3 text-gray-900">In-Depth Reviews</h3>
-          <p class="text-gray-600">Comprehensive analysis of AI tools, platforms, and technologies with real-world testing and honest assessments.</p>
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Latest AI Reviews
+          </h2>
+          <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            Stay updated with our latest comprehensive reviews of AI tools and technologies
+          </p>
         </div>
-        <div class="text-center p-6 rounded-lg bg-gradient-to-br from-purple-50 to-purple-100">
-          <div class="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-            </svg>
-          </div>
-          <h3 class="text-xl font-semibold mb-3 text-gray-900">Latest Insights</h3>
-          <p class="text-gray-600">Stay updated with the newest developments in AI, from breakthrough research to practical applications.</p>
-        </div>
-        <div class="text-center p-6 rounded-lg bg-gradient-to-br from-green-50 to-green-100">
-          <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-            </svg>
-          </div>
-          <h3 class="text-xl font-semibold mb-3 text-gray-900">Expert Analysis</h3>
-          <p class="text-gray-600">Professional insights from AI experts and practitioners who understand the technology and its implications.</p>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- Latest Posts Section -->
-  <section class="py-16 bg-gray-50">
-    <div class="container mx-auto px-4">
-      <div class="flex justify-between items-center mb-12">
-        <h2 class="text-3xl font-bold text-gray-900">Latest Articles</h2>
-        <a href="/blog" class="text-blue-600 hover:text-blue-800 font-semibold transition-colors">
-          View All Posts →
-        </a>
-      </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {latestPosts.map((post) => (
-          <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-            <div class="p-6">
-              <div class="flex items-center text-sm text-gray-500 mb-3">
-                <time datetime={post.data.pubDate.toISOString()}>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {latestPosts.map((post) => (
+            <article class="group">
+              <div class="mb-4">
+                <time class="text-sm text-gray-500">
                   {post.data.pubDate.toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'
                   })}
                 </time>
-                {post.data.tags.length > 0 && (
-                  <span class="mx-2">•</span>
-                )}
-                {post.data.tags.slice(0, 2).map((tag) => (
-                  <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-1">
-                    {tag}
-                  </span>
-                ))}
               </div>
-              <h3 class="text-xl font-semibold mb-3 text-gray-900 line-clamp-2 hover:text-blue-600 transition-colors">
+              
+              <h3 class="text-xl font-semibold mb-3 group-hover:text-blue-600 transition-colors">
                 <a href={`/blog/${post.slug}`}>
                   {post.data.title}
                 </a>
               </h3>
-              <p class="text-gray-600 mb-4 line-clamp-3">
+              
+              <p class="text-gray-600 mb-4 leading-relaxed">
                 {post.data.description}
               </p>
-              <a href={`/blog/${post.slug}`} class="text-blue-600 hover:text-blue-800 font-semibold transition-colors">
-                Read More →
-              </a>
+              
+              <div class="flex items-center justify-between">
+                <a href={`/blog/${post.slug}`} class="text-blue-600 hover:text-blue-800 font-medium">
+                  Read Review →
+                </a>
+                <div class="flex flex-wrap gap-2">
+                  {post.data.tags.slice(0, 2).map((tag) => (
+                    <span class="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div class="text-center mt-12">
+          <a href="/blog" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
+            View All Reviews
+            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Browse by Category
+          </h2>
+          <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            Find AI tools and reviews organized by category and use case
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <a href="/category/productivity" class="group p-6 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors">
+            <div class="text-center">
+              <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-200 transition-colors">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">Productivity</h3>
+              <p class="text-gray-600 text-sm">AI tools to boost your workflow</p>
             </div>
-          </article>
-        ))}
+          </a>
+
+          <a href="/category/writing" class="group p-6 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors">
+            <div class="text-center">
+              <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:bg-green-200 transition-colors">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">Writing</h3>
+              <p class="text-gray-600 text-sm">AI writing assistants and tools</p>
+            </div>
+          </a>
+
+          <a href="/category/marketing" class="group p-6 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors">
+            <div class="text-center">
+              <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-200 transition-colors">
+                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">Marketing</h3>
+              <p class="text-gray-600 text-sm">AI-powered marketing solutions</p>
+            </div>
+          </a>
+
+          <a href="/category/comparison" class="group p-6 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-colors">
+            <div class="text-center">
+              <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:bg-orange-200 transition-colors">
+                <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-2">Comparisons</h3>
+              <p class="text-gray-600 text-sm">Head-to-head tool comparisons</p>
+            </div>
+          </a>
+        </div>
       </div>
     </div>
   </section>
@@ -111,34 +155,9 @@ const latestPosts = posts
   <Testimonials />
 
   <!-- Newsletter Section -->
-  <Newsletter />
-
-  <!-- CTA Section -->
-  <section class="py-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-    <div class="container mx-auto px-4 text-center">
-      <h2 class="text-3xl font-bold mb-4">Ready to Dive Deeper?</h2>
-      <p class="text-xl mb-8 opacity-90">
-        Explore our comprehensive collection of AI reviews and insights to stay informed about the latest developments.
-      </p>
-      <a href="/blog" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-        Browse All Articles
-      </a>
-    </div>
-  </section>
+  <Newsletter 
+    title="Stay Updated"
+    subtitle="Get the latest AI tool reviews and insights delivered to your inbox"
+    showSocial={true}
+  />
 </Layout>
-
-<style>
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
-  .line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-</style>
