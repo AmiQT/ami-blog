@@ -1,0 +1,92 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Page Not Found - AI Review Site" description="The page you're looking for doesn't exist">
+  <section class="py-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+    <div class="container mx-auto px-4 text-center">
+      <h1 class="text-6xl font-bold mb-4">404</h1>
+      <h2 class="text-3xl font-semibold mb-4">Page Not Found</h2>
+      <p class="text-xl opacity-90">
+        The page you're looking for doesn't exist or has been moved.
+      </p>
+    </div>
+  </section>
+
+  <section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4 text-center">
+      <div class="max-w-2xl mx-auto">
+        <div class="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-8">
+          <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33"></path>
+          </svg>
+        </div>
+        
+        <h3 class="text-2xl font-semibold text-gray-900 mb-4">Let's Get You Back on Track</h3>
+        <p class="text-gray-600 mb-8">
+          Here are some helpful links to get you started:
+        </p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <a href="/" class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow text-left">
+            <div class="flex items-center mb-3">
+              <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+              </div>
+              <h4 class="font-semibold text-gray-900">Go Home</h4>
+            </div>
+            <p class="text-gray-600 text-sm">Return to our homepage and explore our latest AI reviews.</p>
+          </a>
+          
+          <a href="/blog" class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow text-left">
+            <div class="flex items-center mb-3">
+              <div class="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+                </svg>
+              </div>
+              <h4 class="font-semibold text-gray-900">Browse Blog</h4>
+            </div>
+            <p class="text-gray-600 text-sm">Explore our comprehensive collection of AI tool reviews.</p>
+          </a>
+          
+          <a href="/search" class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow text-left">
+            <div class="flex items-center mb-3">
+              <div class="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+              </div>
+              <h4 class="font-semibold text-gray-900">Search</h4>
+            </div>
+            <p class="text-gray-600 text-sm">Find specific AI tools or topics you're interested in.</p>
+          </a>
+          
+          <a href="/contact" class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow text-left">
+            <div class="flex items-center mb-3">
+              <div class="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+              <h4 class="font-semibold text-gray-900">Contact Us</h4>
+            </div>
+            <p class="text-gray-600 text-sm">Get in touch if you need help finding something specific.</p>
+          </a>
+        </div>
+        
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h4 class="font-semibold text-gray-900 mb-3">Popular AI Tools</h4>
+          <div class="flex flex-wrap gap-2 justify-center">
+            <a href="/blog/notion-ai-productivity-review" class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm hover:bg-blue-200 transition-colors">Notion AI</a>
+            <a href="/blog/grammarly-ai-writing-assistant-review" class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm hover:bg-purple-200 transition-colors">Grammarly AI</a>
+            <a href="/blog/jasper-ai-content-creation-review" class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm hover:bg-green-200 transition-colors">Jasper AI</a>
+            <a href="/blog/chatgpt-vs-claude-comparison" class="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm hover:bg-orange-200 transition-colors">ChatGPT vs Claude</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
