@@ -17,22 +17,15 @@ type Props = CollectionEntry<'blog'>;
 const { post } = Astro.props;
 const { Content } = await post.render();
 
-// Breadcrumb items
-const breadcrumbItems = [
-  { label: 'Home', href: '/' },
-  { label: 'Blog', href: '/blog' },
-  { label: post.data.title }
-];
-
-// SEO metadata
+// SEO props for the Layout component
 const seoProps = {
   title: post.data.title,
   description: post.data.description,
-  image: post.data.heroImage || '/images/ai-review-site-og.jpg',
-  type: 'article',
+  image: post.data.heroImage,
+  type: 'article' as const,
   publishedTime: post.data.pubDate.toISOString(),
   modifiedTime: post.data.updatedDate ? post.data.updatedDate.toISOString() : post.data.pubDate.toISOString(),
-  author: 'AI Review Team',
+  author: post.data.author,
   tags: post.data.tags
 };
 ---
@@ -42,12 +35,19 @@ const seoProps = {
   <section class="py-16 bg-white border-b border-gray-200">
     <div class="container mx-auto px-4">
       <div class="max-w-4xl mx-auto">
-        <Breadcrumbs items={breadcrumbItems} />
-        <div class="text-center">
-          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight tracking-tight">
+        <Breadcrumbs 
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Blog', href: '/blog' },
+            { label: post.data.title, href: `/blog/${post.slug}` }
+          ]} 
+        />
+        
+        <div class="mt-8">
+          <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
             {post.data.title}
           </h1>
-          <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          <p class="text-xl text-gray-600 leading-relaxed">
             {post.data.description}
           </p>
         </div>
@@ -55,13 +55,73 @@ const seoProps = {
     </div>
   </section>
 
-  <!-- Article Content -->
+  <!-- Article Content Section -->
   <section class="py-12 bg-white">
     <div class="container mx-auto px-4">
       <div class="max-w-4xl mx-auto">
-        <BlogPost post={post} content={Content}>
-          <Content />
-        </BlogPost>
+        {post.data.premium ? (
+          <!-- Premium Content Paywall -->
+          <div class="bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-8 text-center">
+            <div class="mb-6">
+              <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-900 mb-2">Premium Content</h2>
+              <p class="text-gray-600 mb-6">
+                This exclusive article contains detailed analysis, benchmarks, and expert insights that are only available to premium subscribers.
+              </p>
+            </div>
+
+            <div class="bg-white rounded-lg p-6 mb-6">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">What You'll Get:</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                <div class="flex items-center">
+                  <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                  <span class="text-gray-700">Detailed performance benchmarks</span>
+                </div>
+                <div class="flex items-center">
+                  <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                  <span class="text-gray-700">Real-world testing results</span>
+                </div>
+                <div class="flex items-center">
+                  <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                  <span class="text-gray-700">Expert recommendations</span>
+                </div>
+                <div class="flex items-center">
+                  <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                  </svg>
+                  <span class="text-gray-700">Implementation strategies</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <a 
+                href="/premium" 
+                class="inline-block bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:from-purple-700 hover:to-blue-700 transition-all"
+              >
+                Start Free Trial - $9.99/month
+              </a>
+              <p class="text-sm text-gray-500">
+                7-day free trial • Cancel anytime • Access all premium content
+              </p>
+            </div>
+          </div>
+        ) : (
+          <!-- Free Content -->
+          <BlogPost post={post} content={Content}>
+            <Content />
+          </BlogPost>
+        )}
       </div>
     </div>
   </section>
