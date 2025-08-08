@@ -4,6 +4,9 @@ import Layout from '../layouts/Layout.astro';
 import Hero from '../components/Hero.astro';
 import Testimonials from '../components/Testimonials.astro';
 import Newsletter from '../components/Newsletter.astro';
+import SubscriptionModal from '../components/SubscriptionModal.astro';
+import LeadMagnet from '../components/LeadMagnet.astro';
+import AffiliateBanner from '../components/AffiliateBanner.astro';
 
 const posts = await getCollection('blog');
 const latestPosts = posts
@@ -21,8 +24,29 @@ const latestPosts = posts
     showStats={true}
   />
 
-  <!-- Latest Articles Section -->
+  <!-- Lead Magnet Section -->
   <section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        <LeadMagnet 
+          title="Free AI Tools Selection Guide"
+          subtitle="Download our comprehensive guide to choosing the right AI tools for your business. Includes comparison charts, pricing analysis, and implementation tips."
+          features={[
+            "50+ AI tools compared side-by-side",
+            "Pricing analysis and ROI calculations",
+            "Implementation checklists and templates",
+            "Industry-specific recommendations",
+            "Exclusive discount codes for top tools"
+          ]}
+          ctaText="Get Free Guide"
+          bonusText="Bonus: Get 20% off premium AI tools with exclusive codes"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Latest Articles Section -->
+  <section class="py-16 bg-gray-50">
     <div class="container mx-auto px-4">
       <div class="max-w-6xl mx-auto">
         <div class="text-center mb-12">
@@ -36,7 +60,7 @@ const latestPosts = posts
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {latestPosts.map((post) => (
-            <article class="group">
+            <article class="group bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
               <div class="mb-4">
                 <time class="text-sm text-gray-500">
                   {post.data.pubDate.toLocaleDateString('en-US', {
@@ -81,6 +105,56 @@ const latestPosts = posts
             </svg>
           </a>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Affiliate Banner Section -->
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Exclusive AI Tool Deals
+          </h2>
+          <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            Get special discounts on the AI tools we recommend and trust
+          </p>
+        </div>
+
+        <AffiliateBanner 
+          toolName="Jasper AI"
+          description="The #1 AI writing assistant for businesses. Create high-quality content 10x faster."
+          originalPrice="$39/month"
+          discountPrice="$29/month"
+          discountCode="AIREVIEW20"
+          affiliateLink="https://jasper.ai?ref=aireview"
+          features={[
+            "AI-powered content creation",
+            "50+ content templates",
+            "Brand voice customization",
+            "SEO optimization tools",
+            "Team collaboration features"
+          ]}
+          expiryDate="December 31, 2024"
+        />
+
+        <AffiliateBanner 
+          toolName="Grammarly Premium"
+          description="Advanced writing assistant with AI-powered suggestions for grammar, style, and tone."
+          originalPrice="$12/month"
+          discountPrice="$8/month"
+          discountCode="GRAMMARLY25"
+          affiliateLink="https://grammarly.com?ref=aireview"
+          features={[
+            "Advanced grammar checking",
+            "Style and tone suggestions",
+            "Plagiarism detection",
+            "Writing insights",
+            "Cross-platform sync"
+          ]}
+          expiryDate="January 15, 2025"
+        />
       </div>
     </div>
   </section>
@@ -151,6 +225,34 @@ const latestPosts = posts
     </div>
   </section>
 
+  <!-- Premium CTA Section -->
+  <section class="py-16 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+    <div class="container mx-auto px-4">
+      <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-3xl md:text-4xl font-bold mb-6">
+          Get Premium AI Insights
+        </h2>
+        <p class="text-xl opacity-90 mb-8 max-w-3xl mx-auto">
+          Unlock exclusive in-depth reviews, comparison matrices, early access to new tools, and personalized recommendations.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="/premium" class="bg-white text-purple-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-colors">
+            Start Free Trial
+          </a>
+          <button 
+            onclick="showSubscriptionModal()"
+            class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-purple-600 transition-colors"
+          >
+            Get Free Updates
+          </button>
+        </div>
+        <p class="text-sm opacity-75 mt-4">
+          Join 10,000+ professionals getting weekly AI insights
+        </p>
+      </div>
+    </div>
+  </section>
+
   <!-- Testimonials Section -->
   <Testimonials />
 
@@ -160,4 +262,40 @@ const latestPosts = posts
     subtitle="Get the latest AI tool reviews and insights delivered to your inbox"
     showSocial={true}
   />
+
+  <!-- Subscription Modal -->
+  <SubscriptionModal 
+    id="homepage-modal"
+    title="Get Weekly AI Insights"
+    subtitle="Join 10,000+ professionals getting exclusive AI tool reviews and insights every week"
+    showPremium={true}
+  />
+
+  <script>
+    // Show subscription modal after 30 seconds
+    setTimeout(() => {
+      const modal = document.getElementById('homepage-modal');
+      if (modal && !localStorage.getItem('modal-shown')) {
+        modal.classList.remove('hidden');
+        localStorage.setItem('modal-shown', 'true');
+      }
+    }, 30000);
+
+    function showSubscriptionModal() {
+      const modal = document.getElementById('homepage-modal');
+      modal.classList.remove('hidden');
+    }
+
+    // Show modal on scroll (when user reaches 50% of page)
+    window.addEventListener('scroll', () => {
+      const scrollPercent = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+      if (scrollPercent > 50 && !localStorage.getItem('scroll-modal-shown')) {
+        const modal = document.getElementById('homepage-modal');
+        if (modal) {
+          modal.classList.remove('hidden');
+          localStorage.setItem('scroll-modal-shown', 'true');
+        }
+      }
+    });
+  </script>
 </Layout>
